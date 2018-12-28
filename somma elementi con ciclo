@@ -1,0 +1,57 @@
+.data
+frase1: .asciiz "quanti elementi vuoi inserire? "
+numero: .asciiz "inserire il numero da sommare "
+frase2: .asciiz "la somma degli elementi e' "
+
+.text
+
+
+
+.globl main
+
+main:
+
+la $a0,frase1  
+li $v0,4
+syscall      #inserimento della frase
+
+li $v0,5  
+syscall    
+
+move $t0,$v0 #il registro #t0 contiene il valore numero
+
+li $t1,0 # i=0
+li $t3,0 
+
+ciclo_inserimento:
+beq $t1,$t0, altrimenti
+
+la $a0,numero
+la $v0, 4
+syscall   # inserisco il numero 
+
+li $v0,5
+syscall
+
+move $t2,$v0   #il registro $t2 contiene il numero 
+
+add $t3, $t3,$t2 
+
+add $t1,$t1,1 #incremento del contatore 
+
+j ciclo_inserimento
+
+altrimenti:
+
+la $a0,frase2
+li $v0,4
+syscall
+
+move $a0,$t3
+li $v0,1
+syscall
+
+
+esci:
+li $v0,10
+syscall

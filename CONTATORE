@@ -1,0 +1,46 @@
+.data
+numero: .asciiz "quanti elementi vuoi inserire? "
+contatore: .asciiz " \n il contatore vale   "
+spazio: .asciiz  " "
+
+
+.text
+
+
+.globl main
+
+main:
+la $a0,numero
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $t0,$v0 # sposto il contatore in un registro $t0
+
+li $t1,0 # azzero in contatore            i=0;
+
+ciclo:
+beq $t1,$t0,altrimenti
+addi $t1,$t1,1  #i=i++
+
+la $a0,contatore  #stringa 
+li $v0,4
+syscall
+
+la $a0,spazio
+li $v0,4
+syscall 
+
+move $a0,$t1  #sposto per sta
+li $v0,1
+syscall
+
+j ciclo
+
+
+altrimenti:
+li $v0,10
+syscall
+
