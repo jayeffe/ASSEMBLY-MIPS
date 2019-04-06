@@ -1,0 +1,23 @@
+#CAPIRE LE LOCAZIONI DI MEMORIA 
+
+.data
+dato1: .word 10
+dato2: .word 0
+
+.text
+
+
+.globl main
+main:
+
+la $t0,dato1
+la $t1, dato2   
+#ora i il registro contiene l'indirizzo di dato1 e dato 2
+
+
+
+lw $s0, 0($t0)   #CARICO IL VALORE DI DATO1 IN S0
+sw $s0, 0($t1)   #SALVO IL VALORE IN S0 IN DATO2
+
+li $v0,1
+syscall

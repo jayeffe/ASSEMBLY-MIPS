@@ -1,0 +1,59 @@
+#scrivere un programma che prende in input 10 interi e visualizza il massimo senza array
+
+.data
+frase1: .asciiz "inserisci il numero "
+massimo: .asciiz "il massimo è "
+
+
+.text
+
+
+
+.globl main
+main:
+
+li $t0,1   #i =1
+li $t1,0   #max = 0
+
+la $a0,frase1
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $t2,$v0 # in t2 ci sta il numero
+move $t1,$t2    #max=numero
+
+
+ciclo_inserimento:
+bgt $t0,5,esci_ciclo  #i<10 
+
+li $v0,5
+syscall
+move $t3,$v0  #in t3 ho il numero inserito ciclando
+blt $t3, $t1 , esci
+move $t1,$t3
+
+esci:
+
+
+add $t0,$t0,1
+
+
+j ciclo_inserimento
+esci_ciclo:
+
+la $a0,massimo
+li $v0,4
+syscall
+
+move $a0,$t1
+li $v0,1
+syscall
+
+
+li $v0,10
+syscall
+
+
