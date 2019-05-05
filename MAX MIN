@@ -1,0 +1,109 @@
+# Traccia 09-09-2013
+
+# Dovete scrivere un programma assembly il cui main allochi un array di 5 interi sullo stack
+
+# cio√ã arr √ã una variabile locale del main
+
+# una funzione riempi_array riceve il puntatore dell'array come parametro e 
+#riempie ogni singola componente con un valore ricevuto in input dall'utente
+
+# la funzione non ritorna alcun valore al main.
+
+# Una seconda funzione: trovamaxmin riceve come parametro l'indirizzo dell'array,
+# esegue un loop per individuare il massimo e il minimo valore e li ritorna in v0 e v1
+
+.data
+inserimento: .asciiz "inserisci l'array " 
+max: .asciiz "il massimo e' "
+minimo: .asciiz "il minimo Ë "
+
+.text
+
+
+.globl main
+main:
+addi $sp,$sp,-20
+move $s0,$sp
+
+la $a0,inserimento
+li $v0,4
+syscall 
+
+
+move $a0,$s0
+jal riempi_array
+
+move $a0,$s0
+jal trovamaxmin
+
+
+addi $sp,$sp,-20
+la $v0,10
+syscall 
+
+riempi_array:
+move $t9,$a0 #metto la testa dell'array 
+li $t0,0
+ciclo_riempimento:
+beq $t0,5,esci_riempi
+mul $t1,$t0,4
+add $t1,$t1,$t9 #qui la testa che si muove 
+
+#carico l'elemento dell'array
+li $v0,5
+syscall
+
+sw $v0,($t1) #questo Ë il singolo elemento 
+
+
+addi $t0,$t0,1 
+j ciclo_riempimento
+esci_riempi:
+jr $ra 
+
+trovamaxmin:
+move $t9,$a0 #sposto la testa del vettore 
+#accedo al primo elemento fuori dall'array 
+#max= vett[0]
+lw $t7,0($t9) #uno Ë il max
+lw $t8,0($t9)  #uno Ë il minimo 
+li $t0,0
+ciclo_max:
+beq $t0,5,esci_max
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t5,($t1)
+
+bgt $t7,$t5,massimo
+j continua
+massimo:
+move $t7,$t5 #copio il massimo 
+
+blt $t8,$t5,min
+j continua 
+min:
+move $t8,$t5
+
+
+continua:
+addi $t0,$t0,1
+j ciclo_max
+esci_max:
+
+
+move $a0,$t8
+li $v0,1
+syscall
+
+
+
+move $a0,$t7
+li $v0,1
+syscall 
+
+jr $ra 
+
+
+
+
