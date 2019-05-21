@@ -1,64 +1,88 @@
-# sostituisci carattere 
-.data
-str :.space 100 
-car: .space 5
-crt: .asciiz "a"
+#elimina carattere da una stringa 
+
+.data 
+str:.space 100
+stringa1:.asciiz " la stringa senza carattere e'"
 .text 
-.globl main 
+
+.globl main
 
 main:
 
 la $a0,str
-li $v0,8
 li $a1,98
-syscall
-
-la $a0,car
 li $v0,8
-li $a1,3
 syscall
 
-la $t9,car 
-lb $t8,($t9) # byte del carattere
-la $t0,str #testa della stringa 
-li $t2,0
-la $t4,crt
-lb $t5,($t4)
-ciclo:
- lb $t1,($t0) 
- beqz $t1,fine_ciclo
- 
- bne $t1,$t8,continua
- sb $t5, ($t0)
- 
- 
- 
- continua:
- add $t0,$t0,1
- 
- j ciclo
- 
- 
- 
- fine_ciclo:
- la $a0,str
- li $v0,4
- syscall
- 
- 
- li $v0, 10 #questa � la syscall per terminare il programma
- syscall
- 
- 
- 
- 
- 
- 
- 
- 
- 
 
- 
- 
+
+
+elimina:
+	
+la $a0,str
+move $t9,$a0 #passo la testa del vettore 
+
+li $t0,0 #contatore i 
+li $t4,1 #contatore j 
+
+ciclo_esterno:
+
+	lb $t1,($t9) #carico la lettere in $t1
+	
+	beqz $t1,uscita_totale
+	
+	beq $t1,'a',cancella
+	
+	addi $t9,$t9,1
+	addi $t0,$t0,1
+	
+	j ciclo_esterno
+	
+	cancella:
+
+	
+	move $t7,$t9 #passo la testa del corrente in $t7
+	
+	add $t8,$t4,$t9 #avanzo al successivo 
+	
+	
+	ciclo_interno:
+		
+		lb $t5,($t8) #carico il successivo
+	
+	
+		
+		sb $t5,($t7) #faccio la sb nel corrente 
+		
+		beqz $t5,uscita_interno
+		
+		addi $t8,$t8,1 #avanzo nel successivo 
+		addi $t7,$t7,1 #avanzo nel corrente 
+		
+		j ciclo_interno
+	
+	
+	uscita_interno:
+		
+	
+		
+		j ciclo_esterno
+	
+	
+	
+	
+uscita_totale:
+
+la $a0,str
+li $v0,4
+syscall				
+
+li $v0,10
+syscall
+
+
+
+
+
 
 
