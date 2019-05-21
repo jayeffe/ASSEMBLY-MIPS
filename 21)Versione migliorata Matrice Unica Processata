@@ -1,0 +1,163 @@
+.data
+msg1:.asciiz "Dammi il valore di arr["
+msg2:.asciiz "]["
+msg3:.asciiz "] : "
+msg4:.asciiz "\nMatrice Originale\n"
+msg5:.asciiz "\n\nMatrice Trasposta\n"
+msg_slash:.asciiz "\n"
+msg_spazio: .asciiz"  "
+.align 2
+matrix :.space 36
+.text
+.globl main
+
+main: 
+        la $a0,matrix
+        jal riempi_array
+        
+        li $v0,4
+        la $a0,msg4
+        syscall
+        
+        la $a0,matrix
+        jal stampa_array
+     
+        la $a0,matrix
+        jal processA
+        
+        li $v0,4
+        la $a0,msg5
+        syscall
+        
+        la $a0,matrix
+        jal stampa_array
+        
+        li $v0,10
+        syscall
+        
+################################################################
+riempi_array:
+          
+         move $t0,$a0
+         li $t1,0 #i
+         li $t2,0 #j
+         
+         loop1: 
+                 beq $t2,3,i_plus_one
+                 li $v0,4
+                 la $a0,msg1
+                 syscall
+                 
+                 move $a0,$t1
+                 li $v0,1
+                 syscall
+                 
+                 li $v0,4
+                 la $a0,msg2
+                 syscall
+                 
+                 li $v0,1
+                 move $a0,$t2
+                 syscall
+                 
+                 li $v0,4
+                 la $a0,msg3
+                 syscall
+                 
+                 li $v0,5
+                 syscall
+                 
+                 sw $v0,0($t0)
+                 
+                 addi $t0,$t0,4
+                 addi $t2,$t2,1
+                 
+                 j loop1
+                 
+                 i_plus_one:
+                           
+                           addi $t1,$t1,1
+                           beq $t1,3,exit1
+                           li $t2,0
+                           j loop1
+                 exit1:
+                 
+                 jr $ra
+################################################################
+stampa_array:
+
+              move $t0,$a0
+              li $t1,0
+              li $t2,0
+              
+                    loop2:
+                           beq $t2,9,exit2
+                           beq $t1,3,jump_down
+                          
+                           lw $t3,0($t0)
+                           
+                           move $a0,$t3
+                           li $v0,1
+                           syscall
+                                                                                               
+                           li $v0,4
+                           la $a0,msg_spazio
+                           syscall
+                           
+                           addi $t0,$t0,4
+                           addi $t1,$t1,1
+                           addi $t2,$t2,1
+                            j loop2
+                           
+                           jump_down:
+                                     li $v0,4
+                                     la $a0,msg_slash
+                                     syscall
+                                     
+                                     li $t1,0
+                                     
+                                     j loop2
+                                     
+                           exit2:
+                           jr $ra
+################################################################
+processA:                                    
+             move $t0,$a0
+             li $t1,0 #i
+             li $t2,0 #j
+             
+                 loop3:
+                       
+                       beq $t2,3,i_plus_one2
+                       
+                       beq $t1,1,check_one
+                       beq $t1,2,check_two
+                       j continue
+                       
+                        i_plus_one2:
+                         
+                                   addi $t1,$t1,1 #aumenta i
+                                   li $t2,0
+                                   beq $t1,3,exit3
+                                   j loop3
+                       
+                        check_one:
+                                  beqz $t2,save_zero
+                                  j continue
+                                   
+                        check_two:
+                                  
+                                  beq $t2,0,save_zero
+                                  beq $t2,1,save_zero
+                                  j continue
+                                                                       
+                        save_zero:
+                                     sw $zero,0($t0)    
+                                     j continue
+                       
+                             continue:
+                                       addi $t2,$t2,1
+                                       addi $t0,$t0,4
+                                      j loop3                                                                                                                                                                                                                                                                             
+                        exit3:
+                                     jr $ra            

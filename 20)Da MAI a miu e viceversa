@@ -1,0 +1,112 @@
+.data 
+msg1: .asciiz  "Inserisci una stringa max 40 char\n"
+msg2:.asciiz  "\nConversione -> "
+msg3:.asciiz "Tropppi caratter, riprova : \n"
+.align 2 
+stringa : .space 99
+.text
+.globl main
+main:
+
+  loop1:
+      li $v0,4
+      la $a0 ,msg1
+      syscall
+      
+      li $v0,8
+      la $a0,stringa
+      li $a1,98
+      syscall
+      
+      la $a0,stringa
+      jal strlen
+      
+      blt $v0,40,no_retry
+      li $v0,4
+      la $a0,msg3
+      syscall
+      
+      j loop1
+      no_retry :
+      
+      li $v0,4
+      la $a0 , msg2
+      syscall
+      
+      la $a0,stringa
+      jal conversione
+      
+      la $v0,4
+      la  $a0,stringa
+      syscall
+      
+      li $v0,10
+      syscall
+      
+####################################################      
+conversione:
+
+     move $t0,$a0      
+     
+     loop2: 
+       
+              lb $t2,0($t0)
+              beq $t2,0,exit
+                     
+              sge $t3,$t2,65
+              beq $t3,1,verifica
+              
+              addi $t0,$t0,1
+              j loop2
+              
+              verifica:
+              
+                   sle $t4,$t2,90
+                   and $t5,$t3,$t4
+                
+                   beq $t5 ,1,cambio_min_maius
+              
+                   sge $t6,$t2,97
+                   sle $t7,$t2,122
+              
+                   and $t1,$t6,$t7
+                   beq $t1,1,cambio_maius_min
+              
+                   addi $t0,$t0,1
+                   j loop2
+              
+              cambio_min_maius:
+              
+                        addi $t2,$t2,32
+                        sb $t2,0($t0)
+                        addi $t0,$t0,1              
+                        j loop2
+            
+              cambio_maius_min :
+                  
+                        subi $t2,$t2,32
+                        sb $t2,0($t0)
+                        addi $t0,$t0,1
+                        j loop2
+               
+              exit :
+           
+                   jr $ra  
+################################################
+strlen :
+
+       move $t0,$a0
+       li $t1,0
+       
+             loop3 : 
+                     
+                      lb $t2,0($t0)
+                       beq $t2,0,exit3
+                      
+                      addi $t0,$t0,1
+                      addi $t1,$t1,1
+                      j loop3      
+      
+             exit3:
+             subi $v0,$t1,1
+             jr $ra

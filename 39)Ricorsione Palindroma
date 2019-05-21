@@ -1,0 +1,112 @@
+.data
+msg1:.asciiz "Inserisci una stringa max 30 char:\n"
+msg2:.asciiz "Hai inserito : "
+msg3:.asciiz "La stringa è palindroma "
+msg4:.asciiz "La stringa NON è palindroma"
+.align 1
+string:.space 30
+.text
+.globl main
+
+main:     
+          li $v0,4
+          la $a0,msg1
+          syscall  
+          
+          li $v0,8
+          la $a0,string
+          la $a1,29
+          syscall
+          
+          la $a0,string
+          jal strlen
+         
+          move $t0,$a0
+          add $t0,$t0,$v0
+          
+          subi $t0,$t0,1 
+          move $a1,$t0
+          
+          jal check_palindroma
+          
+          beq $v0,1,yes
+          li $v0,4
+          la $a0,msg4
+          syscall
+          j exit
+          
+          yes:
+          li $v0,4
+          la $a0,msg3
+          syscall
+          
+          exit:
+          li $v0,10
+          syscall
+          
+###############################################################
+check_palindroma:
+          
+          addi $sp,$sp,-12
+          sw $ra,0($sp) #ritorno
+          sw $s0,4($sp) #inizio stringa \ indirizzo primo carattere
+          sw $s1,8($sp) #indirizzo ultimo carattere
+         
+          move $s0,$a0
+          move $s1,$a1
+          
+          move $t0,$s0
+          move $t1,$s1
+          
+          
+          lb $t2,0($t0)
+          lb $t3,0($t1)
+                        
+          bne $t2,$t3,no
+          
+          addi $t0,$t0,1
+          
+          beq $t1,$t0,yes_P
+          subi $t1,$t1,1
+          move $a0,$t0
+          move $a1,$t1
+          
+          
+          jal check_palindroma
+          
+          yes_P:
+          li $v0,1
+          
+          j exit_palindroma
+          
+          no:
+          
+          li $v0,0
+              
+          exit_palindroma:
+           lw $ra,0($sp)
+        
+          lw $s0,4($sp)
+           lw $s1,8($sp)
+          addi $sp,$sp,12
+          
+          jr $ra
+                                                      
+###############################################################
+strlen :
+          move $t0,$a0
+          li $t1,0
+          
+                    loop_strlen:
+                                
+                                lbu $t3,0($t0)
+                                beq $t3,0,exit_strlen      
+                                   
+                                addi $t0,$t0,1
+                                addi $t1,$t1,1
+                                j loop_strlen
+                                
+                                exit_strlen:
+                                subi $t1,$t1,1
+                                move $v0,$t1
+                                jr $ra                                              

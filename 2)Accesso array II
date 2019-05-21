@@ -1,0 +1,93 @@
+.data
+str1 :.asciiz "Array Riempito"
+str2 : .asciiz "\nQuale numero dell'array vuoi considerare (min 100) --> "
+str3: .asciiz "Il valore di |x= (x*2)+3| e' : " 
+str4: .asciiz "Valore inserito fuori ordine "
+arr: .word 0:100
+.text
+.globl main 
+
+main: 
+     la $a0,arr
+     jal riempi_array
+     
+     li $v0,4
+     la $a0,str1
+     syscall
+   
+     loop:  
+     li $v0,4
+     la $a0,str2
+     syscall
+     
+     li $v0,5
+     syscall
+    
+     bge $v0,100,retry
+     blt $v0,0,retry
+     
+     beq $v0,-100,exit
+     
+     la $a0,arr     
+     move $a1,$v0
+     jal dai_numero
+        
+     move $a2,$v0
+     
+     li $v0,4
+     la $a0,str3
+     syscall
+     
+     move $a0,$a2
+     li $v0,1
+     syscall
+     
+     j loop
+   
+     retry :
+     li $v0,4
+     la $a0,str4
+     syscall
+   
+     j loop
+     
+     exit :
+      li $v0,10 
+     syscall  
+###################################
+riempi_array :
+     
+      move $t0,$a0
+      li $t1 ,0
+       
+      loop1 : 
+             bge $t1,100,exit1
+             
+             mul $t2,$t1,2
+             
+             addi $t2,$t2,3
+      
+             sw $t2,0($t0) 
+             
+             addi $t1,$t1,1
+             addi $t0,$t0,4
+             
+             j loop1
+             exit1:
+             jr $ra
+###################################
+dai_numero:
+     
+     move $t0,$a0 #array
+     move $t1,$a1 #numero scelto
+     li $t2,0
+     
+     #PER L'ACCESSO AD UN NUMERO IN UN ARRAY RICORDA CHE PUOI DIRETTAMENTE USARE : #
+          
+           sll $t1, $t1, 2  #OVVERO FAI I = I * 4  (AD ESEMPIO IL [5] => 5*4 = "20" DI SPAZIO DELL'ARRAY
+           add $t0,$t0,$t1  # QUINDI ARRAY = ARRAY+5 --> ARRAY[5]
+            
+           lw $v0,0($t0)
+            
+           jr $ra
+             

@@ -1,0 +1,101 @@
+.data
+str1:.asciiz "Dammi il valore di arr["
+str2:.asciiz "] : "
+str3:.asciiz "I valori multipli di 8 sono : "
+ 
+.text
+.globl main
+main:
+      addi $sp,$sp,-20
+      
+      la $a0,0($sp)
+      
+      jal riempi_array
+      
+      la $a0,0($sp)
+      
+      jal conta_multilpli8
+      
+      move $s1,$v0
+      
+      li $v0,4
+      la $a0,str3
+      syscall
+      
+      move $a0,$s1
+      li $v0,1
+      syscall
+      
+      li $v0,10
+      syscall
+##########################################
+riempi_array:      
+          
+          move $t0,$a0
+          li $t1,0
+          
+          loop : 
+                 beq $t1,5,exit
+                 
+                 li $v0,4
+                 la $a0,str1
+                 syscall
+                 
+                 move $a0,$t1
+                 li $v0 ,1
+                 syscall
+                 
+                 li $v0,4
+                 la $a0,str2
+                 syscall
+                 
+                 li $v0,5
+                 syscall
+                 
+                 sw $v0,0($t0)
+                 
+                 addi $t0,$t0,4
+                 add $t1,$t1,1
+                 j loop
+                 
+                 exit:
+                 jr $ra
+#############################################
+conta_multilpli8:
+               
+               move $t0,$a0
+               li $t1,0 #t1 contatore
+               li $t2,0 #incrementa multipli
+
+               loop2:
+                   
+                     beq $t1,5,exit2 #t1 contatore
+                     
+                     lw $t3,0($t0) #t3 è il carattere
+                     
+                     bgez $t3, calcolo_diretto
+                     
+                     not $t4,$t3 
+                     addi $t4,$t4,1
+                     
+                     move $t4,$t3
+                     
+                     calcolo_diretto:
+                       
+                     sll $t3,$t3,29
+                                      
+                     
+                     bne $t3,0,return
+                     
+                     addi $t2,$t2,1 #incrementa multipli
+               
+                   
+                       return :
+                          addi $t1,$t1,1#avanza contatore indici
+                          addi $t0,$t0,4 #sposta puntatore
+                          j loop2
+              
+                     exit2 :
+                     move $v0,$t2
+                     jr $ra 
+                                                                                                                                                                                                               

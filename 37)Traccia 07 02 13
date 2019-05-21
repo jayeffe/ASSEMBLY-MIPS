@@ -1,0 +1,214 @@
+.data
+msg1:.asciiz "Dammi la stringa n.1 -> "
+msg2:.asciiz "Dammi la stringa n.2 -> "
+msg3:.asciiz "Dammi la stringa n.3 -> "
+msg4:.asciiz "Dammi la stringa n.4 -> "
+msg5:.asciiz "Prima Stringa in ordine -> "
+msg6:.asciiz "Ultima Stringa in ordine -> " 
+.text
+.globl main
+main:
+       addi $sp,$sp,-100
+       
+       move $a0,$sp
+       #
+       li $v0,4
+       la $a0,msg1
+       syscall
+      
+       li $v0,8
+       move $a0,$sp
+       li $a1,24
+       syscall
+       
+       #
+       li $v0,4
+       la $a0,msg2
+       syscall
+       
+       li $v0,8
+       addi $a0,$sp,25
+       li $a1,24
+       syscall
+       
+       #          
+       li $v0,4
+       la $a0,msg3
+       syscall
+       
+       li $v0,8
+       addi $a0,$sp,50
+       li $a1,24
+       syscall
+    
+       #
+       li $v0,4
+       la $a0,msg4
+       syscall
+       
+       li $v0,8
+       addi $a0,$sp,75
+       li $a1,24
+       syscall
+       
+       #
+         li $v0,4
+       la $a0,msg5
+       syscall
+       
+       move $a0,$sp
+       jal first_string   
+       
+       li $v0,4
+       la $a0,msg6
+       syscall
+       
+       move $a0,$sp
+       jal last_string    
+       
+       li $v0,10
+       syscall
+       
+##########################################################
+first_string: 
+         
+       addi $sp,$sp,-8
+       sw $s0,0($sp)
+       sw $ra,4($sp)
+       
+       move $a0,$s0
+       
+       addiu $a0,$sp,8
+       addiu $a1,$sp,33
+       
+       jal string_cmp
+       
+       beq $v0,1,prima_terza
+       
+       addiu $a0,$sp,33
+     
+       prima_terza:
+        addiu $a1,$sp,58
+        jal string_cmp
+       
+        beq $v0,1,check_quarta
+       
+        addiu $a0,$sp,58
+         
+       check_quarta:
+        addiu $a1,$sp,83 
+        jal  string_cmp
+                              
+       beq $v0,1,stampa
+       
+       move $a0,$a1
+       li $v0,4
+       syscall
+       j exit_first
+       
+       stampa:
+       
+       li $v0,4
+       syscall
+       
+       exit_first:
+       lw $s0,0($sp)
+       lw $ra,4($sp)
+       addi $sp,$sp,8
+       jr $ra        
+                    
+              
+       
+##########################################################
+last_string:
+       
+       addi $sp,$sp,-8
+       sw $s0,0($sp)
+       sw $ra,4($sp)
+       
+       move $a0,$s0
+       
+       addiu $a0,$sp,8
+       addiu $a1,$sp,33
+       
+       jal string_cmp
+       
+       beq $v0,-1,prima_terza1
+       
+       addiu $a0,$sp,33
+     
+       prima_terza1:
+        addiu $a1,$sp,58
+        jal string_cmp
+       
+        beq $v0,-1,check_quarta1
+       
+        addiu $a0,$sp,58
+         
+       check_quarta1:
+        addiu $a1,$sp,83 
+        jal  string_cmp
+                              
+       beq $v0,-1,stampa
+       
+       move $a0,$a1
+       li $v0,4
+       syscall
+       j exit_first
+       
+       stampa1:
+       
+       li $v0,4
+       syscall
+       
+       exit_first1:
+       lw $s0,0($sp)
+       lw $ra,4($sp)
+       addi $sp,$sp,8
+       jr $ra        
+                    
+       
+                   
+       
+                     
+##########################################################
+string_cmp:
+       
+        move $t0,$a0
+        move $t1,$a1
+        
+        li $t2,0
+        
+                loop_cmp:
+                
+                        lbu $t3,0($t0)
+                        lbu $t4,0($t1)
+                        
+                        seq $t5,$t3,0
+                        seq $t6,$t4,0
+                        and $t7,$t6,$t5
+                       
+                        beq $t7,1,exit_0
+                        
+                        bgt $t4,$t3,return_1
+                        
+                        blt $t4,$t3, return_meno_1
+                        
+                        addi $t0,$t0,1
+                        addi $t1,$t1,1
+                        j loop_cmp
+                        
+                        return_1:
+                                       li $v0,1 
+                                       j exit_cmp
+                        return_meno_1:
+                                       li $v0,-1
+                                       j exit_cmp
+                         
+                        exit_0:
+                                       li $v0,0
+                                       j exit_cmp                                                 
+                                                                                      
+                        exit_cmp:
+                                    jr $ra                                
+                                                                  

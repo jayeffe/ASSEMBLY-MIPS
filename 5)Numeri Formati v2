@@ -1,0 +1,222 @@
+.data
+str1 : .asciiz "Inserisci un intero (0-256) : "
+strBinario :.asciiz "\nValore Binario -> "
+strOttale:.asciiz "\nValore Ottale -> "
+strExa:.asciiz "\nValore Esadecimale -> "
+
+oct : .space 4
+bin : .space 9
+hex : .space 3
+
+.text
+.globl main
+
+
+
+main :
+           addi $sp,$sp,-4
+           
+           li $v0,4
+           la $a0,str1
+           syscall
+           
+           li $v0,5
+           syscall
+           
+           sw $v0,0($sp)
+           
+           li $v0,4
+           la $a0,strBinario
+           syscall
+           
+           move $a0,$sp
+           jal print_bin
+           
+           li $v0,4
+           la $a0,strOttale
+           syscall
+           
+           move $a0,$sp
+           jal print_otta
+           
+            li $v0,4
+           la $a0,strExa
+           syscall
+           
+           move $a0,$sp
+           jal print_hex
+           
+           
+           li $v0,10
+           syscall
+##################################################
+print_bin: 
+           
+           lw $t0,0($a0)
+           li $t1,128
+           la $t5,bin
+           
+           li $t6 ,'1'
+           li $t7,'0'
+           loop :
+                
+                
+                 beqz $t1,exit
+                 and $t2,$t1,$t0
+                 beqz $t2,print_zero
+                 
+                 sb $t6,0($t5)
+                 addi $t5,$t5,1
+                 
+                 j next
+                 
+                 print_zero:
+                 sb $t7,0($t5)
+                 addi $t5,$t5,1
+                 
+                 next :
+                 srl $t1,$t1,1
+                 
+                 j loop                 
+                 
+                 exit :
+                 
+         
+                 addi $t5,$t5,1
+                 sb $t6,0($t5)
+                 
+                 la $a0,bin
+                 li $v0,4
+                 syscall
+                 
+                 jr $ra  
+            
+##################################################
+print_binary: 
+           
+           lw $t0,0($a0)
+           li $t1,128
+           
+           loop_bin:
+                 beqz $t1,exit_bin
+                 and $t2,$t1,$t0
+                 beqz $t2,print_zero_bin
+                 
+                 li $a0,1
+                 li $v0,1
+                 syscall
+                 
+                 j next_bin
+                 
+                 print_zero_bin:
+                 li $a0 ,0
+                 li $v0 ,1
+                 syscall 
+  
+                 next_bin :
+                 srl $t1,$t1,1
+                 j loop                 
+                 
+                 exit_bin :
+                 jr $ra  
+                 
+#################################################
+print_ottale:
+ 
+            lw $t0,0($a0)
+            li $t1,192                                   
+            li $t2,56
+            li $t3,7
+            
+            and $t4,$t0,$t1
+            srl $t4,$t4,6
+            move $a0,$t4
+            li $v0,1
+            syscall
+            
+            and $t4,$t0,$t2
+            srl $t4,$t4,3
+            move $a0,$t4
+            li $v0,1
+            syscall
+            
+            and $t4,$t0,$t3
+            move $a0,$t4
+            li $v0 ,1
+            syscall
+            
+            jr $ra
+
+#################################################                        
+print_otta:
+ 
+            lw $t0,0($a0)
+            li $t1,192                                   
+            li $t2,56
+            li $t3,7
+            la $t5 , oct
+            
+            
+            and $t4,$t0,$t1
+            srl $t4,$t4,6
+            addi $t4,$t4,48 
+            sb $t4,0($t5)
+             
+            and $t4,$t0,$t2
+            srl $t4,$t4,3
+            addi $t4,$t4,48 
+            sb $t4,1($t5)
+            
+            and $t4,$t0,$t3
+            addi $t4,$t4,48 
+            sb $t4,2($t5)                           
+            
+            sb $zero,3($t5)
+                  
+            la $a0,oct    
+            li $v0 ,4
+            syscall
+
+            jr $ra
+#############################################
+print_hex:
+          
+       lw $t0,0($a0)
+       li $t1,240
+       li $t2 ,15
+       la $t4,hex
+       
+       and $t3,$t0,$t1
+       srl $t3,$t3,4
+       
+       bgt $t3,9,print_alto1
+       
+       addi $t3,$t3,48
+       sb $t3,0($t4)
+       j print_secondo
+       
+       print_alto1 :
+                    addi $t3,$t3,55
+                    sb $t3,0($t4)
+       
+       print_secondo: 
+       and $t5,$t0,$t2
+       bgt $t5,9,print_alto2
+       add $t5,$t5,48
+    
+       sb $t5,1($t4)
+       j exit_hex
+       
+       print_alto2 :
+                    addi $t5,$t5,55
+                    sb $t5,1($t4)
+                    
+       exit_hex:
+       sb $zero,2($t4)
+       
+       la $a0,hex
+       li $v0,4
+       syscall
+       
+       jr $ra
+                                               

@@ -1,0 +1,132 @@
+.data
+str1: .asciiz "\nInserisci il numero di elementi dell'array : "
+str2: .asciiz "Inserisci il numero -> \n"
+sep: .asciiz "  "
+str3: .asciiz "\nHai inserito i seguenti numeri : "
+str4:.asciiz "\nArray Ordinato -> "
+.text
+.globl main
+
+main : 
+     
+      li $v0,4
+      la $a0,str1
+      syscall 
+      
+      li $v0,5
+      syscall 
+      
+      move $s0,$v0
+      li $t0,4
+      
+      mult $t0,$s0
+      mflo $t1
+      
+      move $s3,$t1
+      
+      sub $t2,$t2,$s3
+      add $sp,$sp,$t2
+      
+      move $s1,$sp
+      move $a0,$s1
+      jal inserimento
+      
+      li $v0,4
+      la $a0,str3
+      syscall 
+      
+      move $a0,$s1
+      jal stampa 
+      
+      li $v0,4
+      la $a0,str4
+      syscall  
+        
+      move $a0,$s1
+          addi $s2,$s0,-1
+      jal ordina_array
+      
+       move $a0,$s1
+      
+      jal stampa
+ 
+      add $sp,$sp,$s3
+            
+       li $v0,10
+      la $a0,str1
+      syscall 
+ 
+###########################################
+inserimento:
+     move $t0,$a0
+     li $t1,0
+     
+         loop1:
+                beq $t1,$s0,exit1
+                
+                li $v0,4
+                la $a0,str2
+                syscall
+                
+                li $v0,5
+                syscall
+                sw $v0,0($t0)
+            
+                addi $t0,$t0,4
+                addi $t1,$t1,1
+                j loop1
+                
+                exit1:
+                
+                jr $ra
+ ########################################
+ stampa :
+      move $t0,$a0
+      li $t1,0
+      
+      loop2 : 
+              beq $t1,$s0,exit2
+              
+              lw $v0,0($t0)
+              
+              move $a0,$v0
+              li $v0,1
+              syscall
+              
+              li $v0,4
+              la $a0,sep
+              syscall 
+                  
+              addi $t0,$t0,4
+              addi $t1,$t1,1
+              j loop2
+              
+              exit2:
+                
+              jr $ra
+###############################################
+ordina_array:
+	 
+	 move $t0,$a0
+	 li $t1,0
+	 
+	 loop3 : 
+	        bge $t1,$s2,exit3
+	        
+	        lw $t2,0($t0)
+	        lw $t3,4($t0)
+	        
+	        bgt $t2,$t3,swap
+	        addi $t0,$t0,4
+	        addi $t1,$t1,1
+	        
+	        j loop3
+	       
+	 swap:
+	        sw $t2,4($t0)
+	        sw $t3,0($t0)            
+	       
+	        j ordina_array
+	
+	 exit3:        
+                jr $ra

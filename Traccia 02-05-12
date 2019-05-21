@@ -1,0 +1,122 @@
+## Dovete scrivere un programma assembly che inizializza un array monodimensionale
+# e succesivamente accede all'elemento corrispondente all'indice fornito in input.
+# Il main alloca in area stack un array A di 15 interi. 
+# Legge da tastiera due numeri m ed n. Poi richiama una funzione array_init, 
+# fornendole come parametri il puntatore all'array m ed n. 
+# La funzione inizializza ogni elemento A[i] dell'array al valore m*4+n*3+i. 
+# Al ritorno dalla funzione, il main legge da tastiera l'intero i, e richiama la funzione array_element, 
+# che ha due parametri (indirizzo base dell'arrayh ed il valore di i) e ritorna l'intero A[i]. 
+# L'accesso viene ripetuto in ciclo finché l'utente non immette un indice -1.
+
+.data
+str1 : .asciiz "Inserisci numero m : "
+str2: .asciiz "Inserisci numero n : "
+str3: .asciiz "\nQuale elemento dell'array vuoi scegliere (EXIT = -1): "
+.text
+.globl main
+main:
+   
+   add $sp,$sp,-60
+   
+   li $v0 ,4
+   la $a0,str1
+   syscall
+   
+   li $v0,5
+   syscall
+   move $s0,$v0
+   
+   li $v0 ,4
+   la $a0,str2
+   syscall
+   
+   li $v0,5
+   syscall
+   move $s1,$v0
+   
+   move $a0,$sp
+   jal array_init
+  
+    
+   loop_0: 
+   
+   li $v0,4
+   la $a0,str3
+   syscall
+  
+     li $v0,5
+     syscall
+   
+      beq $v0,-1,exit_0
+  
+      move $a0,$sp
+      move $a1,$v0
+  
+      jal  array_elem
+   
+      move $a0,$v0
+      li $v0,1
+      syscall 
+      
+      j loop_0
+   
+   exit_0:
+   addi $sp,$sp, 60
+   li $v0,10
+   syscall
+#####################################    
+array_init:
+    
+   move $t0,$a0
+   li $t1,0
+   li $t2,3
+   li $t3,4
+   
+          loop1:
+                bgt $t1,14,exit1
+                
+                mult $s0,$t3 #m*4
+                mflo $t4
+                
+                mult $s1,$t2 #n*3
+                mflo $t5
+                
+                add $t6,$t4,$t5
+                
+                add $t6,$t6,$t1
+               
+                sw $t6,0($t0) 
+                                
+                addi $t0,$t0,4
+                addi $t1,$t1,1
+                
+                j loop1                  
+               
+               exit1:
+                     jr $ra             
+#####################################
+array_elem:
+
+ move $t0,$a0
+ move $t1,$a1
+ li $t2,0
+ 
+ loop2: 
+          bgt $t2,14,exit_B
+          
+          beq $t2,$t1,ret
+          
+          addi $t0,$t0,4
+          addi $t2,$t2,1
+          
+          j loop2 
+          
+       ret : lw $v0,0($t0)
+             j exit_A
+
+       exit_A:
+             
+             jr $ra
+      exit_B:
+             li $v0,0
+             jr $ra      

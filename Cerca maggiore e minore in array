@@ -1,0 +1,152 @@
+.data
+str1: .asciiz "\nInserisci quanti numeri vuoi considerare :"
+str2: .asciiz "\nInserisci numero :\n"
+str3: .asciiz "\nI numeri sono : "
+sep: .asciiz "  "
+str4: .asciiz "\nValore MAX -> "
+str5:.asciiz "\nValore min -> "
+
+.text
+.globl main
+
+main:
+     li $v0 ,4
+     la $a0,str1
+     syscall
+     
+     li $v0,5
+     syscall
+     
+     #in $s1 ci sta il numero inserito#
+     move $s1,$v0
+     
+     li $t0,4
+     mult $t0,$s1
+     mflo $t1
+      
+     sub $t0,$zero,$t1 
+     add $sp,$sp,$t0
+     #salva lo sp#
+     move $s0,$sp
+     move $a0,$s0
+   
+     jal inserimento
+          
+     li $v0,4
+     la $a0,str3
+     syscall
+  
+     move $a0,$s0
+     
+     jal stampa
+     
+     li $v0 ,4
+     la $a0,str4
+     syscall
+     
+     move $a0,$s0
+     jal cerca_massimo_minimo
+     
+     move $s2,$v0
+     move $a0,$s2
+     li $v0,1
+     syscall
+     
+     li $v0 ,4
+     la $a0,str5
+     syscall
+         
+     move $s3,$v1
+     move $a0,$s3
+     li $v0,1
+     syscall
+     
+     add $t0,$zero,$t1 
+     add $sp,$sp,$t0
+     li $v0,10
+     syscall  
+     
+     
+#####################################
+inserimento:
+         move $t0,$a0
+         li $t1,0
+         
+         loop1:
+              beq $t1,$s1,exit1
+              
+              li $v0 ,4
+              la $a0,str2
+              syscall
+              
+              li $v0,5
+              syscall  
+              
+              sw $v0,0($t0)
+              
+              addi $t0,$t0,4
+              addi $t1,$t1,1             
+              j loop1
+         
+         exit1:
+         jr $ra
+#####################################
+stampa : 
+        move $t0,$a0
+        li $t1,0
+        
+        loop2:
+              beq $t1,$s1,exit2
+              lw  $v0,0($t0)
+              
+              move $a0,$v0
+              
+              li $v0,1
+              
+              syscall
+              
+              li $v0,4
+              la $a0,sep
+              syscall
+              
+              addi $t1,$t1,1
+              addi $t0,$t0,4
+              j loop2
+              
+              exit2:
+              jr $ra
+#####################################
+cerca_massimo_minimo:
+
+             move $t0,$a0
+             li $t1,0
+             
+             lw $v0,0($t0)
+             lw $v1,0($t0)
+             
+             loop3 :
+                   beq $t1,$s1,exit3
+                   
+                   lw $t3,0($t0)
+                   
+                   bge $t3,$v0,max
+                   ble $t3,$v1,min
+                   
+                   j next_n
+                   max :
+                        move $v0,$t3
+                        j next_n
+                   
+                   min : 
+                        move $v1,$t3
+                        j next_n
+                        
+                   next_n:
+                 
+                    addi $t0,$t0,4
+                    addi $t1,$t1,1
+                    j loop3
+              
+             exit3:
+             jr $ra
+#####################################

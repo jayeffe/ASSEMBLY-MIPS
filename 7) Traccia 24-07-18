@@ -1,0 +1,104 @@
+.data
+str1:.asciiz "Dammi il valore di arr["
+str2:.asciiz "] : "
+str3:.asciiz "Il valore minimo trovato e' : "
+arr : .space 20
+.text
+.globl main
+
+main:
+
+      la $s0,arr
+      li $t0,0
+       
+      loop:
+     
+           li $v0,4
+           la $a0,str1
+           syscall
+           
+           move $a0,$t0
+           li $v0,1
+           syscall
+           
+           li $v0,4
+           la $a0,str2
+           syscall
+           
+           li $v0,5
+           syscall
+           
+           sw $v0,0($s0)
+           
+           addi $s0,$s0,4
+           addi $t0,$t0,1
+           
+           blt $t0,5,loop
+       
+           la $a0,arr
+           li $a1,0
+           li $a2,4
+           jal  min_rec
+           
+           move $s1,$v0
+           
+           li $v0,4
+           la $a0,str3
+           syscall
+           
+           move $a0,$s1
+           li $v0,1
+           syscall
+           
+           li $v0,10
+           syscall
+             
+############################################à
+min_rec:
+#(int *arr, int from, int to)
+         addi $sp,$sp,-20
+         sw $ra,0($sp)#ra
+         sw $s0 ,4($sp)#from
+         sw $s1 ,8($sp)#to
+         sw $s2,12($sp)  #mid
+         sw $s3 ,16($sp)#ritorno
+         
+         move $s0,$a1 #a1=0
+         move $s1,$a2 #a2=4
+         
+         bne $s0,$s1,from_to_diversi
+         sll $t0,$s0,2
+         add $t0,$a0,$t0
+         lw $v0,0($t0)
+         j end
+         
+         from_to_diversi:
+         add $s2,$s0,$s1
+         sra $s2,$s2,1
+         #min1 = min_rec(arr, from, mid)
+         move $a2,$s2
+         jal min_rec
+         
+         move $s3,$v0 #s3 = MIN1
+         #min2 = min_rec(arr, mid+1, to)
+         
+         addi $s2,$s2,1
+         move $a1,$s2
+         move $a2,$s1
+         jal min_rec
+         
+         bge $s3,$v0,end
+         move $v0,$s3 
+         
+         end :
+         
+               lw $ra ,0($sp)
+               lw $s0 ,4($sp)
+               lw $s1 ,8($sp)
+               lw $s2 ,12($sp)
+               lw $s3 ,16($sp)
+               
+               addi $sp,$sp,20
+               jr $ra
+         
+         

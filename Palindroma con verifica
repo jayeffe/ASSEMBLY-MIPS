@@ -1,0 +1,114 @@
+.data
+str1: .asciiz "Inserisci una stringa (max 40 caratteri) : \n"
+str2: .asciiz "La stringa ha superato il limite, riprova : \n"
+str3:.asciiz "NO Palindroma"
+str4:.asciiz "SI PALINDROMA"
+stringa:.space 90
+.text
+.globl main 
+
+main:
+
+    loop:
+     li $v0,4
+     la $a0,str1
+     syscall
+     
+     li $v0,8
+     la $a0,stringa
+     li $a1,90
+     syscall
+     
+     la $a0,stringa
+     jal strlen
+     
+     move $s1,$v0
+   
+     bgt $v0,40,errore
+    
+     la $a0,stringa
+          
+     jal verifica_palindroma
+
+     move $a0,$v0  
+     beqz $a0,negazione
+   
+     li $v0,4
+     la $a0,str4
+     syscall
+    
+     li $v0,10
+     syscall
+     
+     negazione:
+          li $v0,4
+          la $a0,str3
+          syscall
+        
+          li $v0,10
+          syscall
+   
+     errore:
+        li $v0,4
+        la $a0,str2
+        syscall
+        j loop
+   
+########################################
+strlen : 
+     move $t0,$a0
+     li $t1,0
+     
+       loop1:
+             lb $t2,0($t0)
+             beqz  $t2,exit1
+             
+             addi $t0,$t0,1
+             addi $t1,$t1,1
+             
+             j loop1  
+                 
+       exit1:
+           sub $v0,$t1,1
+           jr $ra                             
+########################################                                    
+verifica_palindroma:
+
+    move $t0,$a0    
+    li $t6,0
+    li $t7,2
+    
+    div $s1,$t7
+    mflo $a2
+    
+      loop2:
+           beq $t6,$a2,exit3
+           
+           move $t5,$t0
+           lb $t2,0($t5)
+                     
+           add $t5,$t5,$s1
+           sub $t5,$t5,1
+           lb $t3,0($t5) 
+           
+           ori $t2,$t2,32
+           ori $t3,$t3,32
+            
+           bne $t3,$t2,no_palin
+           li $t4,1         
+    
+           add $t0,$t0,1
+           add $t6,$t6,1
+           sub $s1,$s1,2
+           
+           j loop2
+           
+           no_palin:
+            
+                 li $t4,0
+                 move $v0,$t4
+                 j exit3
+           
+           exit3:
+                 move $v0,$t4
+                 jr $ra

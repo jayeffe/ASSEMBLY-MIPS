@@ -1,0 +1,167 @@
+.data
+str1: .asciiz "Dammi la prima stringa : 1) "
+str2: .asciiz "Dammi la seconda stringa : 2) "
+str3: .asciiz "Dammi la terza stringa : 3) "
+str4: .asciiz "Dammi la quarta stringa : 4) "
+strf: .asciiz "La prima stringa in ordine e' -> "
+strl:.asciiz "L'ultima stringa in ordine e' -> "
+.text
+.globl main 
+main :
+     addi $sp,$sp,-100
+ 
+     move $a0,$sp
+     li $v0,8
+     li $a1,24
+     syscall
+     #
+
+     addi $a0,$sp,25
+     li $v0,8
+     li $a1,24
+     syscall
+     #
+
+     addi $a0,$sp,50
+     li $v0,8
+     li $a1,24
+     syscall
+     # 
+  
+     addi $a0,$sp,75
+     li $v0,8
+     li $a1,24
+     syscall 
+      
+     move $a0,$sp
+     jal first_string
+     
+      move $a0,$sp
+     jal last_string
+     
+     
+     li $v0,10
+     syscall
+############################################
+first_string:
+     
+     add $sp,$sp,-8
+     sw $s0,0($sp)
+     sw $ra,4($sp)
+     
+     addiu $s0,$sp,8
+    
+     move $a0,$s0
+     addi $a1,$sp,33
+     
+     jal string_cmp
+     
+     bltz $v0,check_terza
+     addi $s0,$sp,33
+    
+     check_terza:
+        move $a0,$s0
+        addi $a1,$sp,58
+        jal string_cmp
+        bltz  $v0,check_quarta
+        addi $s0,$sp,58
+        
+     check_quarta:
+        move $a0,$s0
+        addi $a1,$sp,83
+        jal string_cmp
+        bltz  $v0,stampa_min
+        addi $s0,$sp,83
+        
+     stampa_min:
+         
+         li $v0,4
+         la $a0,strf
+         syscall
+         
+         move $a0,$s0
+         li $v0,4
+         syscall 
+        
+        lw $ra,4($sp)
+        lw $s0,0($sp)
+        add $sp,$sp,8
+    
+        jr $ra
+############################################
+last_string:
+
+     add $sp,$sp,-8
+     sw $s0,0($sp)
+     sw $ra,4($sp)
+     
+     addiu $s0,$sp,8
+    
+     move $a0,$s0
+     addi $a1,$sp,33
+     
+     jal string_cmp
+     
+     bgez  $v0,check_terza1
+     addi $s0,$sp,33
+    move $a0,$s0
+     check_terza1:
+     
+         addi $a1,$sp,58
+        jal string_cmp
+        bgez  $v0,check_quarta1
+        addi $s0,$sp,58
+        move $a0,$s0
+     check_quarta1:
+       
+        addi $a1,$sp,83
+        jal string_cmp
+        bgez  $v0,stampa_min1
+        addi $s0,$sp,83
+        
+     stampa_min1:
+         
+         li $v0,4
+         la $a0,strl
+         syscall
+         
+         move $a0,$s0
+         li $v0,4
+         syscall 
+        
+        lw $ra,4($sp)
+        lw $s0,0($sp)
+        add $sp,$sp,8
+    
+        jr $ra
+
+
+############################################
+
+string_cmp:
+                     
+                      lbu $t2,0($a0)
+                      lbu $t3,0($a1)
+                      
+                      beqz $t2,uguali
+                      bgt $t2,$t3,prima_precede
+                      blt $t2,$t3,seconda_precede
+                      
+                      addi $a0,$a0,1
+                      addi $a1,$a1,1                       
+                      j string_cmp
+                                           
+                      uguali :
+                      li $v0,0
+                      j exit_cmp
+          
+                      prima_precede :
+                      li $v0 ,1
+                      j exit_cmp
+                      
+                      seconda_precede:
+                      li $v0,-1
+                      j exit_cmp
+             
+                      exit_cmp:
+                      jr $ra

@@ -1,0 +1,153 @@
+.data
+str0: .asciiz "Inserisci 4 stringhe da tastiera :"
+str1: .asciiz "\nDammi la prima stringa : 1) "
+str2: .asciiz "Dammi la seconda stringa : 2) "
+str3: .asciiz "Dammi la terza stringa : 3) "
+str4: .asciiz "Dammi la quarta stringa : 4) "
+ 
+str_prima : .asciiz "La prima stringa in ordine e' -> "
+str_ultima : .asciiz "L'ultima stringa in ordine e' -> "
+
+.text
+.globl main
+main :
+      
+      addi $sp,$sp,-100
+      
+      li $v0,4
+      la $a0,str0
+      syscall
+
+      ####PRIMA###########
+      li $v0,4
+      la $a0,str1
+      syscall
+      
+      move $a0,$sp
+      li $v0,8
+      la $a1,24
+      syscall
+      
+      addi $a3,$sp,25
+      ####SECONDA#########
+    
+      li $v0,4
+      la $a0,str2
+      syscall
+      
+      move $a0,$a3
+      li $v0,8
+      la $a1,24
+      syscall
+      
+      addi $a3,$sp,50
+      #####TERZA###########
+      li $v0,4
+      la $a0,str3
+      syscall
+      
+            move $a0,$a3
+      li $v0,8
+      la $a1,24
+      syscall
+      addi $a3,$sp,75
+      ####QUARTA###########
+      li $v0,4
+      la $a0,str4
+      syscall
+      
+            move $a0,$a3
+      li $v0,8
+      la $a1,24
+      syscall
+      ###############
+      
+      move $a0,$sp
+      jal first_string
+      
+      li $v0,10
+      syscall
+      
+###########################################
+first_string:
+      
+      
+       addi $sp,$sp,-8
+       #sp a -108
+       
+       sw $s0,0($sp)
+       sw $ra,4($sp)
+       
+       addi $s0,$sp,8  
+       
+       move $a0,$s0
+       addi $a1,$sp,33
+       
+       jal string_cmp
+       bltz $v0,next_string1
+       addi $s0,$sp,33
+       move $a0,$s0
+       
+       next_string1:
+             
+              addi $a1,$sp,58
+              jal string_cmp
+              bltz $v0,next_string2
+              addi $s0,$sp,58 
+              move $a0,$s0
+       
+       next_string2:
+           
+              addi $a1,$sp,83
+              jal string_cmp
+              bltz $v0,stampa_min
+              addi $s0,$sp,83
+              move $a0,$s0
+       stampa_min:
+              
+              li $v0,4
+              la $a0,str_prima
+              syscall
+              
+              move $a0,$s0
+              li $v0,4
+              syscall
+             
+              lw $ra,4($sp)
+              lw $s0,0($sp)
+              addi $sp,$sp,8
+    
+               
+              jr $ra
+              
+###########################################
+
+string_cmp:
+                     
+                      lbu $t2,0($a0)
+                      lbu $t3,0($a1)
+                      
+                      beqz $t2,uguali
+                      blt $t2,$t3,prima_precede
+                      bgt $t2,$t3,seconda_precede
+                      
+                      addi $a0,$a0,1
+                      addi $a1,$a1,1                       
+                      j string_cmp
+                                           
+                      uguali :
+                      li $v0,0
+                      j exit_cmp
+          
+                      prima_precede :
+                      li $v0 ,-1
+                      j exit_cmp
+                      
+                      seconda_precede:
+                      li $v0,1
+                      j exit_cmp
+             
+                      exit_cmp:
+                      jr $ra
+
+      

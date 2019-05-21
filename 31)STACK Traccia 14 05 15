@@ -1,0 +1,92 @@
+.data
+msg1:.asciiz "Dammi una stringa : "
+msg2: .asciiz "Nella stringa data non compaiono i caratteri : \n"
+stringa_space:.asciiz "  "   
+virgola:.asciiz " ,"
+.text
+.globl main 
+main:
+       
+       addi $sp,$sp,-256
+       
+       li $v0,4
+       la $a0,msg1
+       syscall
+        
+       li $v0,8
+       la $a0,0($sp)
+       li $a1,256
+       syscall 
+         
+       li $v0,4
+       la $a0,msg2
+       syscall
+       
+       li $t2,97
+       li $t6,0
+       
+       loop_funzione:
+            
+            bgt $t2,122,exit        
+        
+            move $a1,$t2
+            la $a0,0($sp)
+       
+            jal trova_in_alfabeto
+            beq $v0,0,stampa_char
+      
+            addi $t2,$t2,1 
+         
+            j loop_funzione
+            
+       stampa_char:
+       
+                   beq $t6,0,no_virgola
+                    
+                   li $v0,4
+                   la $a0,virgola
+                   syscall 
+                          
+                          
+                   no_virgola:
+                   li $v0,11
+                   move $a0,$t2
+                   syscall
+                   
+                   li $v0,4
+                   la $a0,stringa_space
+                   syscall
+                  
+                               
+                   addi $t2,$t2,1
+                   addi $t6,$t6,1
+                   
+                   j loop_funzione
+        
+       exit:
+                   li $v0,10
+                   syscall
+##########################################
+trova_in_alfabeto:
+
+        move $t0,$a0
+        move $t1,$a1
+        li $v0,0
+        
+        loop2:
+              
+              lb $t3,0($t0)
+              beq $t3,0,exit2
+             
+              ori $t4,$t3,32
+              ori $t5,$t1,32
+              
+              beq $t4,$t5,found
+              
+              addi $t0,$t0,1
+              j loop2       
+               
+              found:
+                     li $v0,1
+              exit2:  
+                     jr $ra      

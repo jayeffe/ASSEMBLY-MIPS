@@ -1,0 +1,63 @@
+.data
+msg1:.asciiz "Dammi un numero (-2ˆ31<= x <2ˆ31)"
+msg2:.asciiz "La somma delle singole cifre e' : "
+msg3:.asciiz "Hai inserito un numero troppo grande!"
+
+.text
+.globl main
+main:
+        li $v0,4
+        la $a0,msg1
+        syscall
+        
+        li $v0,5 
+        syscall
+        
+        move $s0,$v0
+        
+        move $a0,$s0
+        jal compute_sum
+        
+        move $a0,$v0
+        li $v0,1
+        syscall
+        
+        
+        li $v0,10
+        syscall
+        
+################################################
+compute_sum: 
+          
+          move $t0,$a0
+          #esponente
+          li $t1,10
+          li $t2,0
+          
+          loop2:
+                beqz $t0,exit2
+                div $t0,$t1 
+                
+               
+                mflo $t4
+                mfhi $t3
+                
+                add $t2,$t2,$t3
+                move $t0,$t4
+                
+                j loop2
+                           
+                 exit2:
+               
+               move $v0,$t2
+             
+                 jr $ra
+              
+                
+                
+                 
+                 
+                                
+          
+        
+        

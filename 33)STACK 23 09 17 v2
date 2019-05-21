@@ -1,0 +1,166 @@
+.data
+msg1:.asciiz "Dammi il valore di arr["
+msg2:.asciiz "]["
+msg3:.asciiz "] : "
+msg_spazio:.asciiz "  "
+msg_slash:.asciiz "\n"
+msg4:.asciiz "\nMatrice Originale\n"
+msg5:.asciiz "\nMatrice Nuova Rispetto ala 1^ colonna\n"
+.text
+.globl main 
+main: 
+       
+        addi $sp,$sp,-36
+        
+        la $a0,0($sp)
+        jal riempi_array
+        
+        li $v0,4
+        la $a0,msg4
+        syscall
+        
+        la $a0,0($sp)
+        jal stampa_array
+        
+         li $v0,4
+        la $a0,msg5
+        syscall
+        
+        la $a0,0($sp)
+        jal nuova_array
+        
+        la $a0,0($sp)
+        jal stampa_array
+        
+        
+        li $v0,10
+        syscall
+        
+##############################################################
+riempi_array:
+            
+              move $t0,$a0
+              li $t1,0  #i 
+              li $t2,0  #j
+              
+              loop1:
+                    beq $t2,3,incrementa_i
+                    li $v0,4
+                    la $a0,msg1
+                    syscall
+                    
+                    li $v0,1
+                    move $a0,$t1
+                    syscall
+                    
+                    li $v0,4
+                    la $a0,msg2
+                    syscall
+                    
+                    li $v0,1
+                    move $a0,$t2
+                    syscall
+                    
+                    li $v0,4
+                    la $a0,msg3
+                    syscall
+                    
+                    li $v0,5
+                    syscall
+                    
+                    sw $v0,0($t0)
+                    
+                    addi $t0,$t0,4
+                    addi $t2,$t2,1
+                            
+                    j loop1
+                            
+                    incrementa_i:
+                                  
+                                  addi $t1,$t1,1
+                                  beq $t1,3,exit1
+                                  li $t2,0
+                                  j loop1
+                    
+               exit1 : 
+                     jr $ra                     
+##############################################################
+stampa_array: 
+             
+             move $t0,$a0
+             li $t1,0 # i
+             li $t2,0 # j
+             
+             loop2: 
+                    beq $t2,3,scendi_indice
+                    
+                    lw $t3,0($t0)
+                    
+                    move $a0,$t3
+                    li $v0,1
+                    syscall
+                    
+                    li $v0,4
+                    la $a0,msg_spazio
+                    syscall
+                    
+                    addi $t0,$t0,4
+                    addi $t2,$t2,1
+                    
+                    j loop2
+
+                    scendi_indice:
+                                   li $v0,4
+                                   la $a0,msg_slash
+                                   syscall
+                                   
+                                   li $t2,0
+                                   addi $t1,$t1,1
+                                   beq $t1,3,exit2
+                                                                      
+                                   j loop2 
+                    
+                    exit2:
+                           jr $ra 
+##############################################################
+nuova_array: 
+                                                     
+             move $t0,$a0
+             li $t1,0 
+          
+            loop3: 
+                    beq $t1,2,exit3                     
+                    lw $t3,0($t0)
+                    lw $t4,12($t0)
+                    
+                    blt $t4,$t3,swap_first_second
+                    addi $t1,$t1,1
+                    addi $t0,$t0,12
+                    j loop3
+                    
+                    swap_first_second:
+                    
+                    sw $t4,0($t0)
+                    sw $t3,12($t0)
+                    
+                    lw $t3,4($t0)
+                    lw $t4,16($t0)
+                    
+                    sw $t4,4($t0)
+                    sw $t3,16($t0)
+                    
+                    lw $t3,8($t0)
+                    lw $t4,20($t0)
+                   
+                    sw $t4,8($t0)
+                    sw $t3,20($t0)
+                    
+                    addi $t0,$t0,12
+                    addi $t1,$t1,1
+                    j loop3
+                    
+      
+                    exit3:          
+                    
+                    jr $ra
+                   

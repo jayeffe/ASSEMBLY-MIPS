@@ -1,0 +1,112 @@
+.data
+msg1:.asciiz"Inserisci una frase di massimo 40 char :\n"
+msg2 :.asciiz "Numero di caratteri superato , riprova :\n"
+msg3: .asciiz "\nIl numero di parole con l'accento sono : "
+ 
+stringa : .byte 
+.text
+.globl main 
+main :    
+         li $v0,4
+         la $a0,msg1
+         syscall
+  
+   loop1:
+         li $v0,8
+         la $a0,stringa
+         li $a1,40
+         syscall
+         
+         la $a0,stringa
+         jal strlen
+         
+         move $a1,$v0
+         
+         blt $a1,41,no_retry
+               
+         
+         li $v0,4
+         la $a0,msg2
+         syscall
+         
+         j loop1
+         
+         no_retry:
+                     
+         li $v0,4
+         la $a0,msg3 
+         syscall
+         
+         la $a0,stringa
+         jal conta_vocali
+      
+         
+         
+         move $a0,$v0
+         li $v0,1
+         syscall
+         
+         
+       
+         
+         li $v0,10
+         syscall
+#####################################################
+conta_vocali :
+          
+         move $t0,$a0         
+         li $t1,0
+         li $t3,0
+         loop2:  
+                 beq $t1,40,exit2 
+                 lb $t2,0($t0)
+                 
+                 addi $t2,$t2,256  
+                 
+                 beq $t2,224 ,contatore_accenti
+                 beq $t2,232 ,contatore_accenti
+                 beq $t2,233 ,contatore_accenti
+                 beq $t2,236 ,contatore_accenti
+                 beq $t2,242 ,contatore_accenti    
+                 beq $t2,249 ,contatore_accenti
+                   
+                 addi $t0,$t0,1
+                 addi $t1,$t1,1
+                 j loop2
+                 
+                 contatore_accenti:
+                                    addi $t3,$t3,1
+                                    addi $t0,$t0,1
+                                    j loop2                
+         
+                 exit2:
+                 move $v0,$t3 
+                 jr $ra
+#####################################################
+strlen :
+           move $t0,$a0
+           li $t1,0
+           
+                 loop_r:
+                         
+                         lb $t2,0($t0)
+                          addi $t0,$t0,1
+                        
+                          beq $t2,0,exit_r
+                      addi $t1,$t1,1
+                           
+                         j loop_r
+                         
+                         exit_r:
+                         addi $t1,$t1,-1
+                         move $v0,$t1
+                         jr $ra
+                               
+                                           
+         
+         
+         
+        
+
+        
+      

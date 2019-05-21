@@ -1,0 +1,89 @@
+.data
+msg1:.asciiz "\nDammi il valore di arr["
+msg2:.asciiz "] : "
+msg3:.asciiz "I valori normalizzati sono : "
+.text
+.globl main 
+main:
+
+          addi $sp,$sp,-20
+          move $s0,$sp
+          
+          move $a0,$s0
+          jal riempi_array
+          
+          move $a0,$s0
+          jal conta_normalizzati
+          
+          move $a1,$v0
+          la $a0,msg3
+          li $v0,4
+          syscall
+          
+          li $v0,1
+          move $a0,$a1
+          syscall
+         
+          li $v0,10
+          syscall
+          
+##################################################
+riempi_array:
+         
+          move $t0,$a0
+          li $t1,0
+          
+          loop:
+                beq $t1,5,exit
+                
+                li $v0,4
+                la $a0,msg1
+                syscall
+                
+                move $a0,$t1
+                li $v0,1
+                syscall
+                
+                li $v0,4
+                la $a0,msg2
+                syscall
+                
+                li $v0,6
+                syscall
+                
+                swc1 $f0,0($t0)
+                addi $t0,$t0,4
+                addi $t1,$t1,1
+                
+                j loop
+                
+                exit:
+                jr $ra
+##################################################
+conta_normalizzati:
+
+            move $t0,$a0
+            li $t1,0
+            li $t2,0
+            
+            loop2:
+                       beq $t1,5,exit2
+                       
+                       lw $t3,0($t0)
+                       srl $t3,$t3,23
+                       andi $t3,255
+                       
+                       beqz $t3,continue
+                       
+                       addi $t2,$t2,1
+                       
+                       continue:
+                       addi $t0,$t0,4
+                       addi $t1,$t1,1
+                       j loop2
+                       
+                   
+                       exit2:
+                       move $v0,$t2
+                       jr $ra
+            

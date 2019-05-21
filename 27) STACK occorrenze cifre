@@ -1,0 +1,96 @@
+.data
+msg0:.asciiz "Dammi un intero : "
+msg1:.asciiz "\nDammi una cifra decimale (Spazio per finire): "
+msg2:.asciiz "  compare  "
+msg_slash:.asciiz "\n"
+msg3:.asciiz "  volte nella striga che rappresenta l'intero in decimale\n"
+
+.text
+.globl main
+main: 
+      addi $sp,$sp,-4
+ 
+        
+      li $v0,4
+      la $a0,msg0 #Dammi un intero : "
+      syscall
+      
+      li $v0,5
+      syscall
+      
+      sw $v0 ,0($sp)
+      
+loop1:
+      li $v0,4
+      la $a0,msg1 #"Dammi una cifra decimale (Spazio per finire): "
+      syscall
+            
+      li $v0,12
+      syscall
+    
+      move $s0,$v0#s0 cifra 
+      
+     
+      beq $v0,32,exit1
+      
+       li $v0,4
+      la $a0,msg_slash
+      syscall
+       
+      move  $a0,$s0
+      li $v0,11
+      syscall
+      
+     
+      
+      li $v0,4
+      la $a0,msg2 # "compare  "
+      syscall
+      
+      move $a1,$s0     
+      lw $a0,0($sp)
+      jal check_numbers
+      
+      move $a0,$v0
+      li $v0,1
+      syscall
+      
+      li $v0,4
+      la $a0,msg3
+      syscall
+      j loop1
+      exit1:
+      li $v0,10
+      syscall
+################################################      
+check_numbers:
+               
+               move $t0,$a0
+               move $t1,$a1
+               
+               li $t4,0
+               li $t6 ,10
+               addi $t1,$t1,-48
+               loop2:
+               
+                    
+                      div $t0,$t6
+                      mflo $t3 #risultato
+                      mfhi $t5 #resto
+                     
+                      move $t0,$t3
+                      beq $t5,$t1,found2
+                      
+                      beqz $t3,exit2
+                      
+                      j loop2
+                       
+                      found2:
+                               addi $t4,$t4,1                                    
+                               j loop2
+                     
+                      exit2:
+                             move $v0,$t4 
+                             jr $ra       
+      
+

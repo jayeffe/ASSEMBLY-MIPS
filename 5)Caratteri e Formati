@@ -1,0 +1,200 @@
+.data
+str1: .asciiz "Inserisci il carattere da considerare : "
+strDec: .asciiz "\nFormato Decimale : "
+strBin: .asciiz "\nFormato Binario : "
+strEx: .asciiz "\nFormato Esadecimale : "
+strOct: .asciiz "\nFormato Ottale : "
+ch: .space 2
+bin :.space 9
+hex :.space 3
+oct :.space 4
+
+.text
+.globl main 
+
+main : 
+       
+       li $v0 , 4
+       la $a0,str1
+       syscall
+       
+       li $v0 ,8
+       la $a0,ch
+       li $a1,2
+       syscall
+         
+       li $v0 , 4
+       la $a0,strDec
+       syscall
+       
+       lbu $a0,ch
+       jal print_decimal
+       
+          
+       li $v0 , 4
+       la $a0,strBin
+       syscall
+      
+       lbu $a0,ch 
+       jal print_binary 
+       
+       li $v0 , 4
+       la $a0,strOct
+       syscall
+      
+       lbu $a0,ch
+       jal print_oct 
+       
+       li $v0 , 4
+       la $a0,strEx
+       syscall
+       
+       lbu $a0,ch
+       jal print_hex
+       
+                  
+                                                                                       
+       li $v0,10
+       syscall
+         
+###########################################
+print_decimal : 
+           
+           li $v0,1
+           syscall
+           jr $ra
+           
+###########################################
+print_binary :
+           
+            move $t0,$a0
+            la $t5,bin
+            li $t1,'0'
+            li $t2,'1'
+            li $t3 , 128
+            
+            loop1: 
+                   beqz $t3,exit1
+                   and $t4,$t0,$t3
+                   beqz $t4,set_zero
+                   
+                   sb $t2,0($t5)
+                   srl $t3,$t3,1   
+                   addi $t5,$t5,1
+                   
+                   j loop1
+                                      
+                   set_zero:
+                           sb $t1,0($t5)   
+                           srl $t3,$t3,1                                                  
+                           addi $t5,$t5,1
+                           j loop1
+                   
+                    exit1 : 
+                    
+                    addi $t5,$t5,1
+                    sb $0,0($t5)
+                                  
+                    li $v0,4
+                    la $a0,bin
+                    syscall 
+                    jr $ra  
+###########################################
+print_oct :
+            
+            move $t0,$a0
+            la $t5,oct
+            li $t1,192
+            li $t2,56
+            li $t3,7
+            
+           
+                   #primo numero (da dx) 
+                   and $t4,$t0,$t1
+                   srl $t4,$t4,6
+                   
+                   addi $t4,$t4,48
+                   sb $t4,0($t5)  
+                   addi $t5,$t5,1
+                   
+                    #secondo numero (da dx) 
+                   and $t4,$t0,$t2
+                   srl $t4,$t4,3
+                   
+                   addi $t4,$t4,48
+                   sb $t4,0($t5) 
+                   addi $t5,$t5,1
+                   
+                    #terzo numero (da dx) 
+                   and $t4,$t0,$t3
+        
+                   addi $t4,$t4,48
+                   sb $t4,0($t5)    
+                   
+                   addi $t5,$t5,1
+                   
+                   sb $0,0($t5) 
+                   
+                    li $v0,4
+                    la $a0,oct
+                    syscall 
+                    jr $ra  
+                   
+###########################################                   
+
+print_hex:                                     
+                    
+                move $t0,$a0
+                la $t1,hex
+                li $t2,240
+                li $t3 ,15
+                
+                         
+                         and $t4,$t0,$t2
+                         srl $t4,$t4,4
+                         ble $t4,9,salta
+                         addi $t4,$t4,55
+                         b inserisci
+                         
+                        salta :
+                         add $t4,$t4,'0'
+                        inserisci:  
+                         sb $t4,0($t1)
+                         addi $t1,$t1,1
+                         
+                         
+                        and $t4,$t0,$t3
+                        ble $t4,9,salta2
+                        addi $t4,$t4,55
+                        b inserisci2
+                         
+                        salta2 :
+                         add $t4,$t4,'0'
+                        inserisci2:  
+                         sb $t4,0($t1)
+                         addi $t1,$t1,1
+       
+                        sb $0,0($t1) 
+                   
+                    li $v0,4
+                    la $a0,hex
+                    syscall 
+                    jr $ra  
+                         
+                         
+                         
+                   
+                   
+                   
+                   
+                   
+                   
+                     
+            
+                                                                                                
+                           
+                           
+                           
+                   
+                 
+
