@@ -1,0 +1,75 @@
+#bool isDivBy2PowerM(unsigned int n, 
+  #                  unsigned int m) 
+ 
+  #  // if expression results to 0, then 
+   # // n is divisible by pow(2, m) 
+   # if ((n & ((1 << m) - 1)) == 0) 
+   #     return true; 
+  
+   # // n is not divisible 
+   # return false; 
+
+.data
+inseriscin: .asciiz "inserire il valore del numero, vedo se e' divisibile "
+inseriscim: .asciiz "inserisci il divisore "
+divisibile: .asciiz "divisibile"
+non_divisibile: .asciiz "non divisibile "
+
+
+
+
+.text
+
+
+
+.globl main
+main:
+
+la $a0,inseriscin
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $t9,$v0 #in t9 ho n
+
+
+la $a0,inseriscim
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $t8,$v0   #in t8 ho m 
+
+
+ # if ((n & ((1 << m) - 1)) == 0) 
+   #     return true; 
+  
+  li $t7,1
+  sllv  $t6,$t7,$t8 
+ addi $t5,$t6,-1
+  
+  and $t4,$t9,$t5
+  
+  beqz $t4,return1
+  
+  la $a0,non_divisibile
+  li $v0,4
+  syscall
+  
+  j esci 
+  
+  return1:
+  la $a0,divisibile
+  li $v0,4
+  syscall
+  
+  esci:
+  li $v0,10
+  syscall
+
+
+

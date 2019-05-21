@@ -1,0 +1,62 @@
+#ANDIAMO A VEDERE COME SI SETTA UN BIT IN UNA DETERMINATA POSIZIONE AD 1 
+
+.data
+inserisci: .asciiz "inserire l'intero "
+posizione: .asciiz "inserire la posizione "
+risultato: .asciiz "risultato "
+
+
+
+
+.text
+
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $t9,$v0
+
+
+#indica la posizione 
+li $t8,1
+
+  #num |= (1 << pos); 
+#}# 
+#int main() 
+ #{ 
+  #   int num = 4, pos = 1; 
+  #   set(num, pos); 
+  #   cout << (int)(num) << endl; 
+  #   return 0; 
+  #} 
+
+
+#scifto a sinistra 
+sll $t2,$t8,1 
+
+
+
+or  $t3,$t9,$t2
+
+
+
+move $a0,$t3
+
+
+li $v0,1
+syscall
+
+
+
+
+esci:
+li $v0,10
+syscall

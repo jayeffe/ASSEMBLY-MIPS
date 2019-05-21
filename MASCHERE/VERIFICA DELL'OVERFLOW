@@ -1,0 +1,83 @@
+###############################################################################################
+
+#RICONOSCIMENTO DI UN OVERFLOW 
+
+#SE ENTRAMBI I NUMERI SONO POSITIVI E LA SOMMA E' NEGATIVA CI STA OVERFLOW
+#SE ENTRAMBI I NUMERI SONO NEGATIVI E LA SOMMA E' POSITIVA CI STA OVERFLOW 
+#SE SONO NEGLI ALTRI CASI NON CI STA OVERFLOW
+###############################################################################################
+.data
+inserisci1: .asciiz "inserisci intero1 "
+inserisci2: .asciiz "inserisci secondo intero "
+overflow: .asciiz "si e' verificato overflow "
+no_overflow: .asciiz "non si e' verificato overflow "
+
+
+.text
+
+
+
+.globl main
+main:
+
+la $a0,inserisci1
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $t9,$v0
+
+la $a0,inserisci2
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $t8,$v0
+###############################################################################################
+
+#ora qui ho il primo intero in $t9
+#ora qui ho il secondo intero in $t8
+
+###############################################################################################
+#faccio una somma:
+add $t7,$t8,$t9  #in %t7 ho la somma 
+
+verifica_primo:
+bgtz $t9,maggiore0
+li $t0,0
+j verifica_secondo
+maggiore0:
+li $t0,1
+
+
+verifica_secondo:
+
+bgtz $t8,maggiore2
+li $t1,0
+j verifica_overflow
+maggiore2:
+li $t1,1
+
+verifica_overflow:
+beq $t0,$t1,uguali
+
+la $a0,no_overflow
+li $v0,4
+syscall 
+
+j esci 
+uguali:
+la $a0,overflow
+li $v0,4
+syscall 
+
+
+
+          esci:
+          li $v0,10
+          syscall 
+            

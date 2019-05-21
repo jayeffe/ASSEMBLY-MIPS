@@ -1,0 +1,150 @@
+
+.data
+.align 2
+array: .space 20
+
+inserisci: .asciiz "inserisci gli elementi nell'array "
+
+stampa: .asciiz "stampa gli elementi nell'array "
+
+spazio: .asciiz " " 
+
+
+multiplo: .asciiz "ho trovato un multiplo all'indice " 
+
+
+accapo: .asciiz "\n"
+
+
+.text
+
+
+.globl main
+
+main:
+
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+
+
+
+la $a0,array
+jal inserimento
+
+
+la $a0,array
+jal stampa_elementi
+
+la $a0,array
+jal multiplo_otto
+
+
+
+
+esci:
+li $v0,10
+syscall
+
+inserimento:
+move $t9,$a0
+li $t0,0
+loop_inserimento:
+beq $t0,5,esci_loop
+mul $t1,$t0,4
+add  $t1,$t1,$t9
+
+li $v0,5
+syscall
+
+move $t8,$v0 #per convenzione i registri v servono per ricevere 
+sw $t8,($t1)
+
+
+addiu $t0,$t0,1
+j loop_inserimento
+esci_loop:
+
+la $a0,stampa
+li $v0,4
+syscall
+
+jr $ra 
+
+stampa_elementi:
+move $t9,$a0
+li $t0,0
+loop_stampa:
+beq $t0,5,esci_loop_st
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+move $a0,$t2
+li $v0,1
+syscall
+
+la $a0,spazio
+li $v0,4
+syscall
+
+
+
+
+addiu $t0,$t0,1
+j loop_stampa
+esci_loop_st:
+jr $ra 
+
+
+multiplo_otto:
+move $t9,$a0
+li $t0,0
+loop_multiplo:
+beq $t0,5,esci_loop_mtp
+
+mul $t1,$t0,4
+add $t1,$t1,$t9
+lw $t2,($t1)
+
+#divido il numero per 8
+srl $t3,$t2,3
+#il risultato della divisione lo tengo in $t3
+
+#prendo $t3 e lo moltiplico per 8
+sll $t4,$t3,3 
+
+#devo tornare all'intero di partenza quindi
+
+beq $t4,$t2,si
+
+
+addiu $t0,$t0,1
+j loop_multiplo
+
+si:
+la $a0,multiplo
+li $v0,4
+syscall
+
+move $a0,$t0
+li $v0,1
+syscall
+
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+
+addiu $t0,$t0,1
+j loop_multiplo
+esci_loop_mtp:
+jr $ra

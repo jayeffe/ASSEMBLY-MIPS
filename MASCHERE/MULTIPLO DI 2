@@ -1,0 +1,44 @@
+#multiplo di 2
+.data
+
+inserisci: .asciiz "inserisci il numero "
+multiplo: .asciiz "multiplo di 2 "
+non_multiplo: .asciiz "non è un multiplo "
+
+.text
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $t9,$v0 #in $t0 ho il numero che ho inserito da tastiera
+
+li $t7,1
+and $t8,$t7,$t9
+
+
+beq $t8,0,multiplos
+
+la $a0,non_multiplo
+li $v0,4
+syscall
+
+
+j esci 
+
+multiplos:
+la $a0,multiplo
+li $v0,4
+syscall
+
+
+
+
+esci:
+li $v0,10
+syscall

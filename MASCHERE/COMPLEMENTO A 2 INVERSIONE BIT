@@ -1,0 +1,45 @@
+#CAMBIO DI SEGNO DI UN NUMERO DATO DA TASTIERA
+
+
+.data
+inserisci:.asciiz "inserisci un numero "
+negativo: .asciiz "il numero fornito ---> "
+
+
+
+
+
+.text
+
+
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+
+li $v0,5
+syscall
+
+move $t9,$v0 #il mio numero risiede in $t9
+
+#devo utilizzare il complemento a 2 devo invertire prima tutti i bit 
+#quindi uso il not 
+
+not $t8,$t9 #il mio numero con i bit invertiti risiede in $t8
+
+add $t7,$t8,1 #in $t7 ho il complemento a 2 
+
+
+move $a0,$t7
+li $v0,1
+syscall
+
+
+esci:
+li $v0,10
+syscall

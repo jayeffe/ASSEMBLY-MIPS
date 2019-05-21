@@ -1,0 +1,67 @@
+.data
+inserisci: .asciiz "inserisci un numero "
+multiplo: .asciiz "il numero e' un multiplo "
+not_multiplo: .asciiz "il numero non è un multiplo "
+
+dopo_shift: .asciiz "il numero dopo lo shift a sinistra  e' "
+dopo_shiftdx: .asciiz "il numero dopo lo shift a destra  e' "
+
+accapo: .asciiz "\n" 
+
+
+.text
+
+
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $t9,$v0
+
+#in t9 ho il mio numero
+
+#mi accorgo che i multipli di 8 hanno i 3 bit a 0 
+#faccio uno shift a sx di 3 ovvero divido il numero per 8 
+
+srl $t7,$t9,3
+
+la $a0,dopo_shift
+li $v0,4
+syscall
+
+move $a0,$t7
+li $v0,1
+syscall 
+
+#ora rimetto il numero apposto facendo lo shift a destra di 3
+sll $t6,$t7,3
+
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+
+
+la $a0,dopo_shiftdx
+li $v0,4
+syscall
+
+move $a0,$t6
+li $v0,1
+syscall
+
+
+
+
+esci:
+li $v0,10
+syscall 
