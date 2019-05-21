@@ -1,0 +1,80 @@
+.data
+inserimento: .asciiz "inserisci la stringa "
+str: .space 100
+num_vocali: .asciiz "il numero delle vocali e' "
+
+
+.text
+
+
+
+.globl main
+
+main:
+
+la $a0,inserimento 
+li $v0,4
+syscall
+
+la $a0,str
+la $a1,98
+li $v0,8
+syscall
+
+
+la $a0,str
+jal conta_vocali
+
+
+move $a0,$v0
+li $v0,1
+syscall 
+
+esci:
+li $v0,10
+syscall 
+
+conta_vocali:
+#allochiamo il byte
+
+lbu $s0,($a0)
+
+beqz $s0,uscita
+#alloco lo stack
+
+bne $s0,'a', continua1
+      addi $s1,$t1,1 
+	continua1:	
+	bne $t0,'e', continua2
+      addi $t1,$t1,1
+	continua2:
+	bne $t0,'i', continua3
+	addi $t1,$t1,1
+	continua3:
+	bne $t0,'o', continua4
+	addi $t1,$t1,1
+	continua4:
+	bne $t0,'u', continua
+	addi $t1,$t1,1
+
+
+continua:
+addi $sp,$sp,-8
+
+
+sw $a0,0($sp)
+sw $ra,4($sp)
+addi $a0,$a0,1
+
+jal conta_vocali
+
+lw $a0,0($sp)
+move $v0,$t1
+lw $ra,4($sp)
+
+addi $sp,$sp,8
+jr $ra 
+
+uscita:
+move $v0,$t1
+jr $ra 

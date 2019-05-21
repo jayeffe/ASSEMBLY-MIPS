@@ -1,0 +1,68 @@
+.data
+
+inserimento: .asciiz "inserire il numero di cui devo calcolarmi il numero di fibonacci  "
+
+
+
+.text
+
+
+
+.globl main
+main:
+
+
+la $a0,inserimento
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $a0,$v0
+jal fibonacci
+
+move $a0,$v0
+li $v0,1
+syscall 
+
+
+
+esci:
+li $v0,10
+syscall
+
+
+fibonacci:
+#nel main ho passato la mia n 
+li $t0,1 
+
+bgt $a0,$t0,caso_non_base
+li $v0,1
+jr $ra 
+
+caso_non_base:
+#abbasso lo stack di 8
+addi $sp,$sp,-12
+
+sw $a0,4($sp)
+sw $ra,0($sp) 
+
+#abbasso di uno
+addi $a0,$a0,-1 
+jal fibonacci 
+#ora il primo risultato lo salvo sullo stack
+sw $v0,8($sp) 
+#aggiorno il parametro di ingresso
+lw $a0, 4($sp)
+#decremento di due 
+addi $a0,$a0,-2
+jal fibonacci
+#una volta fatta la seconda chiamata ricorsiva il mio a0 sara aggiornato di 2 
+lw $v1, 8($sp)    # ripristina il primo risultato
+	add $v0, $v0, $v1 # fai la somma dei due risultati
+	lw $ra, 0($sp)    # ripristina ra
+	addi $sp,$sp,12      # rimuovi il frame dallo stack
+	jr $ra            # ritorna al chiamante
+
+

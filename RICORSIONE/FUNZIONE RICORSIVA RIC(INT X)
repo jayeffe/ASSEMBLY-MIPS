@@ -1,0 +1,59 @@
+
+#CALCOLIAMO QUESTA FUNZIONE RICORSIVA
+#int ric(int n)
+#if(n==0) reuturn 0, else return x+ric(x-1)
+
+.data
+inserimento: .asciiz "inserire elemento n "
+
+
+.text
+
+
+
+.globl main
+main:
+
+la $a0,inserimento
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $a0,$v0
+jal ric
+
+move $a0,$v0
+li $v0,1
+syscall
+
+esci:
+li $v0,10
+syscall
+
+ric:
+beqz $a0,caso_base
+#aggiorno lo stack e ci metto andata e ritorno
+addi $sp,$sp,-8
+sw $a0,4($sp) #il registro che contiene il parametro all'ingresso
+sw $ra,0($sp)  #il registro che contiene il paramentro di ritorno
+
+#decremento $a0,di 1
+addi $a0,$a0,-1
+jal ric
+
+# nel mio $a0,non ci starà piu' quindi il valore che ho messo all'inizio
+#praticamente aggiorno lo stack, ricaricando il valore decrementato
+lw $a0,4($sp)
+#ora il questo caso devo ritornare v0+a0 
+add $v0,$a0,$v0
+#posso aggiornare
+lw $ra,($sp)
+addi $sp,$sp,8
+jr $ra 
+
+
+caso_base:
+li $v0,0
+jr $ra 

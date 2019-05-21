@@ -1,0 +1,77 @@
+# esercizio ricorsivo 
+
+# int fun(int n)
+# if(n=1){
+	# return 2 
+	# else 
+	# return 2*fun(n-1)
+
+.data
+
+inserisci: .asciiz "inserisci il numero "
+
+.text
+
+
+
+
+.globl main
+
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+li $v0,5
+syscall 
+
+move $a0,$v0
+jal fun
+
+move $a0,$v0
+
+li $v0,1
+syscall
+
+
+
+esci:
+li $v0,10
+syscall 
+
+
+fun:
+
+#comincio dal passo base :
+beq $a0,1,caso_base
+
+addi $sp,$sp,-8 #spazio per due elementi
+#ingresso/uscita
+
+sw $a0,4($sp)
+sw $ra,0($sp)
+
+#ora vado a decrementare il mio $a0
+addi $a0,$a0,-1
+
+jal fun #qui ritorno alla funzione decrementata di 1 
+#quando decremento il mio $a0, lo dovrò aggiornare quindi 
+lw $a0,4($sp)
+
+#ora il mio a0 sarebbe (n-1)
+#il mio a0 continene il 2 del caso base 
+
+mul $v0,$v0,$a0
+lw $ra,0($sp)
+
+addi $sp,$sp,8
+
+jr $ra 
+
+
+
+
+caso_base:
+li $v0,2
+jr $ra 

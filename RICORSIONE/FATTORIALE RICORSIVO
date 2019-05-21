@@ -1,0 +1,68 @@
+.data
+
+inserimento: .asciiz "inserire il numero di cui devo calcolarmi il fattoriale  "
+
+
+
+.text
+
+
+
+.globl main
+main:
+
+
+la $a0,inserimento
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $a0,$v0
+jal fattoriale 
+
+
+
+esci:
+li $v0,10
+syscall
+
+
+
+
+fattoriale:
+fatt:
+li $t8,1
+sub $sp, $sp, 8 # aggiornamento dello stack per fare
+# spazio a 2 elementi
+
+sw $ra, 4($sp) # salvataggio del registro di ritorno (come
+# programma chiamato)
+
+sw $a0, 0($sp) # salvataggio del parametro n (come
+# programma chiamante)
+
+slt  $t0, $a0,$t8 # test per n < 1
+
+
+beq $t0, $zero, L1 # se n >= 1 salta a L1
+
+add $v0, $zero, 1 # restituisce 1 (per n<1)
+
+add $sp, $sp, 8 # aggiornamento dello stack
+jr $ra # ritorno all’istruzione successiva a jal
+
+L1: 
+sub $a0, $a0, 1 # n > 1: l’argomento diventa n-1
+jal fatt # chiamata a fatt con (n-1)
+
+lw $a0, 0($sp) # ritorno da jal: ripristino di n
+
+lw $ra, 4($sp) # ripristino del registro di ritorno
+
+sub $sp, $sp, 8 # aggiornamento dello stack
+
+mul $v0, $a0, $v0 # restituzione di n * fatt (n-1)
+
+jr $ra # ritorno al programma chiamante

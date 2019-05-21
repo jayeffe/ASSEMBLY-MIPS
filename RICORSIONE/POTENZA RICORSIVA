@@ -1,0 +1,83 @@
+#Scrivere una funzione C che calcola, dati due numeri interi M ed N, la potenza M^N. Si progettino le versione ricorsiva
+
+#Soluzione ricorsiva
+
+#int pot(int m, int n){ 
+ #    if (n>0) return m*pot(m,n-1); 
+  #   else return 1; 
+#} 
+ 
+
+.data
+inserisci1: .asciiz "inserisci m "
+inserisci2: .asciiz "inserisci n "
+
+
+
+.text
+
+
+.globl main
+main:
+
+la $a0,inserisci1
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $s0,$v0   #il mio m 
+
+la $a0,inserisci2
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $a0,$v0     #il mio n 
+
+jal potenza 
+
+move $a0,$v0
+li $v0,1
+syscall
+
+esci:
+li $v0,10
+syscall
+
+potenza:
+
+bgtz $a0,caso_nonbase
+
+li $v0,1
+
+
+jr $ra 
+
+
+
+caso_nonbase:
+
+#al caso che non riusulta essere il caso base che torna 1 devo allocare lo stack
+addi $sp,$sp,-8
+sw $a0,4($sp) 
+sw $ra,0($sp)
+
+#ora chiamo la funziione con a1 decrementato di 1
+#a0 non decrementa nulla perchè rimane sempre lo stesso
+addi $a0,$a0,-1
+jal potenza 
+
+#ora trovata la potenza il mio a1 si è aggiornato 
+lw $a0,4($sp)
+
+#ora quindi vado a sommare 
+mulu $v0,$v0,$s0
+
+lw $ra,0($sp)
+
+addi $sp,$sp,8
+jr $ra 

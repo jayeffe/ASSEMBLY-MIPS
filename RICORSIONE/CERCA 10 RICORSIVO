@@ -1,0 +1,123 @@
+.data
+inserisci: .asciiz "inserisci elementi "
+
+spazio: .asciiz " "
+accapo: .asciiz "\n"
+vett: .space 20
+trovato: .asciiz "trovato "
+notrovato: .asciiz "no trovato "
+.align 2
+
+
+
+.text
+
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,vett
+jal inserimento
+
+
+la $a0,vett
+jal stampa
+
+la $a0,vett
+jal trova_ricorsivo 
+beq $v0,1,trovatos
+
+la $a0,notrovato
+li $v0,4
+syscall 
+j esci 
+trovatos:
+la $a0,trovato
+li $v0,4
+syscall 
+
+
+
+
+esci:
+li $v0,10
+syscall
+
+inserimento:
+move $t9,$a0
+li $t0,0
+ciclo_inserimento:
+beq $t0,5,esci_inserimento
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+li $v0,5
+syscall
+
+sw $v0,($t1)
+
+
+
+add $t0,$t0,1
+j ciclo_inserimento
+esci_inserimento:
+
+jr $ra
+
+
+
+
+stampa:
+move $t9,$a0
+li $t0,0
+ciclo_stampa:
+beq $t0,5,esci_stampa
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+
+move $a0,$t2
+li $v0,1
+syscall
+
+la $a0,spazio
+li $v0,4
+syscall
+
+add $t0,$t0,1
+j ciclo_stampa
+esci_stampa:
+jr $ra 
+
+trova_ricorsivo:
+lw $t2,($a0) #carico il mio $t2,in $a0
+move $a1,$t2 #qui ho l'elemento 
+
+beq $a1,0,esciloop
+beq $a1,10,trovatoss
+addi $sp,$sp,-12
+sw $a0,0($sp)
+sw $a1,4($sp)
+sw $ra,8($sp)
+addi $a0,$a0,4
+jal trova_ricorsivo 
+lw $a0,0($sp)
+lw $a1,4($sp)
+lw $ra,8($sp)
+
+addi $sp,$sp,12
+
+jr $ra 
+
+trovatoss:
+li $v0,1
+jr $ra 
+esciloop:
+li $v0,0
+jr $ra 

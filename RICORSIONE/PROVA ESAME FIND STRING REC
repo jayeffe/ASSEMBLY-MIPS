@@ -1,0 +1,90 @@
+#scriviamo una funzione ricorsiva di al più venti caratteri che deve ricercare un carattere nella stringa
+#la funzione si chiama find_string_rec e riceve come parametri il puntatore alla stringa e il carattewre da ricercare 
+#la funzione ritorna 0 o 1  e il main stampa il valore da cercare 
+
+
+.data
+inserimento: .asciiz "inserisci la stringa "
+carattere: .asciiz "inserire il carattere da cercare "
+trovato: .asciiz "\n l'elemento è stato trovato "
+non_trovato: .asciiz "\n l'elemento non è stato trovato "
+str: .space 25
+
+.text
+
+
+
+.globl main
+
+main:
+
+la $a0, inserimento
+li $v0,4
+syscall 
+
+la $a0,str
+li $a1,23  #IN QUESTO MODO SONO 23 I CARATTERI EFFETTIVI IN QUANTO CI SARANNO SIA IL TERMINATORE CHE IL FINE STRINGA 
+li $v0,8
+syscall
+
+la $a0,carattere 
+li $v0,4
+syscall 
+
+li $v0,12 
+syscall
+
+move $a1,$v0
+
+la $a0,str
+jal find_string_rec
+
+beqz $v0,not_trovato
+
+la $a0,trovato
+li $v0,4
+syscall
+
+j esci 
+
+not_trovato:
+la $a0,non_trovato
+li $v0,4
+syscall 
+
+
+esci:
+li $v0,10
+syscall
+
+
+find_string_rec:
+
+lbu $t0,($a0) #testa della stringa 
+beqz $t0,return0
+
+beq $t0,$a1,return1
+
+#diversamente abbasso lo stack di 2 word
+addi $sp,$sp,-8
+sw $a0,0($sp)
+sw $ra,4($sp)
+
+#incremento il mio a0 di 1
+addi $a0,$a0,1
+jal find_string_rec # chiamata ricorsiva 
+
+lw $a0,0($sp)
+lw $ra,4($sp)
+
+addi $sp,$sp,8
+
+jr $ra 
+
+return1:
+li $v0,1
+jr $ra 
+
+return0:
+li $v0,0
+jr $ra 

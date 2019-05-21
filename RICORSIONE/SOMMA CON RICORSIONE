@@ -1,0 +1,73 @@
+#Scrivere una funzione ricorsiva (in C) che calcoli la somma degli elementi di un array A[1..n] di n interi.
+#• Soluzione: Algoritmo ricorsivo
+#(Caso Base) Se l’array `e vuoto (n=0) allora la somma dei suoi elementi `e zero
+#(Passo generico) Se l’array [a1 , . . . , an ] non `e vuoto allora la somma dei suoi elementi `e data da an piu �? l
+#a somma degli elementi di [a1, . . . , an−1].
+
+
+.data
+.align 2
+arr: .space 20
+
+.text
+
+.globl main
+main:
+ 
+ la $a0,arr 
+ 
+ loop:
+ li $v0,5
+ syscall
+ 
+ sw $v0,($a0)
+ addiu $a0,$a0,4
+ addi $t0,$t0,1 #incremento il contatore 
+ 
+ blt $t0,5,loop
+ 
+la $a0,arr
+jal somma 
+
+add $v0,$v0,-1
+move $a0,$v0
+li $v0,1
+syscall 
+
+
+
+ li $v0,10
+ syscall
+ 
+ 
+ somma:
+ 
+ #carico il primo elemento dell'array:
+ lw $t2,($a0) 
+ move $a1,$t2
+ 
+ #confronto:
+ beq $a1,0,return_false
+ 
+ addi $sp,$sp,-12
+ sw $a0,0($sp)
+ sw $a1,4($sp)
+ sw $ra,8($sp)
+ 
+ addiu $a0,$a0,4
+ jal somma 
+ 
+ lw $a0,0($sp)
+ lw $a1,4($sp)
+ lw $ra,8($sp)
+ 
+ add $v0,$v0,$a1
+ addi $sp,$sp,12
+ jr $ra 
+
+ 
+ 
+ return_false:
+ addi $v0,$zero,1
+ jr $ra 
+ 
