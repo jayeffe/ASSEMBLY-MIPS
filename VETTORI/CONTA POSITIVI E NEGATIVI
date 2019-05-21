@@ -1,0 +1,134 @@
+#CONTA POSITIVI E NEGATIVI DI UN ARRAY
+
+.data
+frase1: .asciiz "inserisci elementi nell'array "
+frase2: .asciiz "stampa elementi dell'array "
+spazio: .asciiz " "
+accapo: .asciiz "\n"
+npositivi: .asciiz " interi positivi --> "
+nnegativi: .asciiz " interi negativi --> "
+
+
+.text
+
+
+
+.globl main
+
+main:
+
+addi $sp,$sp,-16
+move $s0,$sp
+
+la $a0,frase1
+li $v0,4
+syscall
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+move $a0,$s0
+jal inserimento
+
+move $a0,$s0
+jal stampa
+
+
+move $a0,$s0
+jal conta_positivinegativi
+
+esci:
+addi $sp,$sp,16
+li $v0,10
+syscall
+
+
+
+inserimento:
+move $t9,$a0
+li $t0,0
+ciclo_inserimento:
+beq $t0,4,esci_ciclo
+mul $t1,$t0,4
+add $t1,$t1,$t9 
+
+li $v0,5
+syscall
+
+sw $v0,($t1)
+addi $t0,$t0,1
+j ciclo_inserimento
+
+esci_ciclo:
+
+la $a0,frase2
+li $v0,4
+syscall
+jr $ra
+
+stampa:
+move $t9,$a0
+li $t0,0
+ciclo_stampa:
+beq $t0,4,esci_stampa
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+
+move $a0,$t2
+li $v0,1
+syscall
+
+la $a0,spazio
+li $v0,4
+syscall
+
+addi $t0,$t0,1
+j ciclo_stampa
+esci_stampa:
+jr $ra 
+
+conta_positivinegativi:
+move $t9,$a0
+li $t0,0 #contatore del ciclo
+li $t3,0 #contatore positivi
+li $t4,0 #contatore negativi 
+ciclo_conta:
+beq $t0,4,esci_conta
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+bgtz $t2,positivi
+addi $t4,$t4,1
+
+j incrementa 
+positivi:
+addi $t3,$t3,1
+
+
+incrementa:
+addi $t0,$t0,1
+j ciclo_conta 
+esci_conta:
+
+la $a0,npositivi
+li $v0,4
+syscall
+
+move $a0,$t3
+li $v0,1
+syscall
+
+la $a0,nnegativi
+li $v0,4
+syscall
+
+move $a0,$t4
+li $v0,1
+syscall
+
+jr $ra
+

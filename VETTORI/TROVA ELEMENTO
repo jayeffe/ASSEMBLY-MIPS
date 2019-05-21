@@ -1,0 +1,123 @@
+.data 
+frase1:.asciiz" inserimento vettore "
+frase2:.asciiz " stampa del vettore "
+spazio:.asciiz " "
+trovato:.asciiz " ho trovato l'elemento"
+nontrovato:.asciiz " non ho trovato l'elemento "
+inserisci:.asciiz" inserisci il numero da trovare "
+.text
+
+.globl main
+
+main:
+
+la $a0,frase1
+li $v0,4
+syscall
+
+addi $sp,$sp,-16
+move $s0,$sp
+
+move $t9,$s0  # ho la testa del vettore 
+
+li $t0,0
+
+ciclo_inserimento:
+beq $t0,4,esci_ciclo
+
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+li $v0,5
+syscall
+
+sw $v0,($t1)
+
+addi $t0,$t0,1
+
+j ciclo_inserimento
+
+esci_ciclo:
+
+
+
+
+la $a0,frase2
+li $v0,4
+syscall
+
+stampa_vettore:
+move $t9,$s0
+li $t0,0
+
+ciclo_stampa:
+beq $t0,4,uscita_stampa
+
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+
+move $a0,$t2
+li $v0,1
+syscall
+
+
+la $a0,spazio
+li $v0,4
+syscall
+
+addi $t0,$t0,1
+
+j ciclo_stampa
+
+
+uscita_stampa:
+
+trova_elemento:
+
+move $t9,$s0
+li $t0,0
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+move $t4,$v0
+
+ciclo_trova_elemento:
+beq $t0,4,esci_ciclotrova
+
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+
+beq $t2,$t4,esci_uguale
+
+
+addi $t0,$t0,1
+j ciclo_trova_elemento
+
+esci_uguale:
+la $a0,trovato
+li $v0,4
+syscall
+
+
+li $v0,10
+syscall
+
+esci_ciclotrova:
+la $a0,nontrovato
+li $v0,4
+syscall
+
+
+li $v0,10
+syscall
+
+

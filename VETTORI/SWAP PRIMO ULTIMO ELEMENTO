@@ -1,0 +1,161 @@
+#prova elimina elementi
+.data
+frase1: .asciiz "inserire elementi nel vettore " 
+frase2: .asciiz "stampa elementi nel vettore "
+frase3: .asciiz " "
+accapo: .asciiz "\n"
+
+
+.text
+
+.globl main
+main:
+
+addi $sp,$sp,-16
+move $s0,$sp
+
+la $a0,frase1
+li $v0,4
+syscall
+
+move $a0,$s0
+jal inserisci
+
+move $a0,$s0
+jal stampa
+
+move $a0,$s0
+jal elimina
+
+
+
+move $a0,$s0
+jal stampa_new
+
+
+esci:
+addi $sp,$sp,16
+li $v0,10
+syscall
+
+inserisci:
+move $t9,$a0
+li $t0,0
+ciclo_inserimento:
+beq $t0,4,esci_ciclo
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+li $v0,5
+syscall
+
+sw $v0,($t1)
+
+addi $t0,$t0,1
+j ciclo_inserimento
+esci_ciclo:
+
+la $a0,frase2
+li $v0,4
+syscall
+
+jr $ra
+
+stampa:
+move $t9,$a0
+li $t0,0
+ciclo_stampa:
+beq $t0,4,esci_stampa
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+move $a0,$t2
+
+li $v0,1
+syscall
+
+la $a0,frase3
+li $v0,4
+syscall 
+
+addi $t0,$t0,1
+j ciclo_stampa
+esci_stampa:
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+jr $ra
+
+
+elimina:
+move $t9,$a0
+li $t0,0 
+li $t8,4 
+li $t7,0
+ciclo_esterno:
+
+beq $t0,4,esci_ciclo
+mul $t1,$t0,4
+add $t1,$t1,$t9
+lw $t2,($t1) 
+beq $t2,$t8,uguali
+
+addi $t0,$t0,1
+j ciclo_esterno
+
+uguali: 
+      ciclo_interno:
+      add $t7,$t0,1 
+      beq $t7,4,esci_interno
+      mul $t5,$t7,4
+      add $t5,$t5,$t9
+      
+      lw $t4,($t5)
+      
+      
+      sw $t4,($t1)
+      sw $t2,($t5)
+      
+        addi $t7,$t7,1 
+      j ciclo_interno
+
+      esci_interno:
+
+addi $t0,$t0,1
+j ciclo_esterno
+esci_ciclo:
+jr $ra 
+
+
+
+
+stampa_new :
+move $t9,$a0
+li $t0,0
+ciclo_stampa_new:
+beq $t0,4,esci_stampa_new 
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+move $a0,$t2
+
+li $v0,1
+syscall
+
+la $a0,frase3
+li $v0,4
+syscall 
+
+addi $t0,$t0,1
+j ciclo_stampa_new 
+esci_stampa_new :
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+jr $ra

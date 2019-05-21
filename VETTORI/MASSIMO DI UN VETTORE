@@ -1,0 +1,108 @@
+# massimo di un vettore 
+
+.data
+frase1: .asciiz "inserisci elemento nel vettore "
+frase2: .asciiz "stampa elementi del vettore"
+spazio: .asciiz " " 
+frase3: .asciiz "il massimo e' "
+
+
+.text
+
+
+.globl main 
+main:
+la $a0,frase1
+li $v0,4
+syscall
+
+addi $sp,$sp,-16
+move $s0,$sp
+move $a0,$s0 #ora la testa è in t9
+move $t9,$a0
+
+li $t0,0  #indice
+ciclo_inserimento:
+beq $t0,4,esci_inserimento
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+#inserisco l'elemento
+li $v0,5
+syscall
+
+sw $v0,($t1) #carico in memoria 
+
+addi $t0,$t0,1
+j ciclo_inserimento
+esci_inserimento:
+
+
+
+stampa_vettore:
+la $a0,frase2
+li $v0,4
+syscall 
+
+
+move $t9,$a0 #sposto la testa in $t9
+li $t0,0
+
+ciclo_stampa:
+beq $t0,4,esci_stampa
+mul $t1,$t0,4
+add $t1,$t1,$t9 
+
+lw $t2,($t1) #carico elementi in $t2
+
+move $a0,$t2
+li $v0,1
+syscall
+
+la $a0,spazio
+li $v0,4
+syscall 
+
+addi $t0,$t0,1
+j ciclo_stampa
+esci_stampa:
+
+
+massimo_vettore:
+move $t9,$a0
+li $t0,0
+
+lw $t3,0($t9) #nel registro $t3 ho elemento  max=v[0]
+
+#potevo accedere ache al primo elemento posto in posizione zero facendo una mul fuori dal ciclo
+#azzerando un registro e sommando poi la testa del vettore, ma cosi' è piu ottimizzato
+
+ciclo_massimo:
+beq $t0,4,esci_massimo
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+
+lw $t2,($t1) # elemento in memoria  v[i]
+bgt $t2,$t3,massimo  
+j continua
+
+massimo:
+move $t3,$t2   #max=v[i]
+
+continua:
+addi $t0,$t0,1
+j ciclo_massimo
+esci_massimo:
+
+la $a0,frase3
+li $v0,4
+syscall
+
+move $a0,$t3
+li $v0,1
+syscall 
+
+esci:
+li $v0,10
+syscall 

@@ -1,0 +1,163 @@
+
+#Dovete scrivere un programma assembly che inizializza un array monodimensionale, e successivamente 
+#accede all'elemento corrispondente all'indice fornito in input.
+
+# Si allochi staticamente in area dati globale un array di 20 interi. Il main richiama una funzione array_init,
+
+# fornendole come unico parametro il puntatore all'array. La funzione inizializza ogni elemento A[i] dellíarray al valore i*6+1. 
+#Al ritorno dalla funzione, 
+
+# il main legge da tastiera l'intero i, e richiama la funzione
+
+# array_element, che ha due parametri (indirizzo base dellíarray ed il valore di i) e ritorna líintero A[i].
+
+# Líaccesso viene ripetuto in ciclo finchË líutente non immette un indice -1.
+
+.data
+.align 2
+vett: .space 80 
+
+stampa: .asciiz "stampa "
+frase: .asciiz "inserisci elemento nell'array: "
+spazio: .asciiz " "
+leggointero: .asciiz "dammi un intero compreso tra 0 e 19 (questa domanda verr� ripetuta fino a quando non sar� inserito -1): "
+accapo: .asciiz "\n"
+frasefinale: .asciiz "l'elemento nella posizione da lei indicata e' : "
+.text
+
+
+
+.globl main
+
+main:
+la $a0,frase
+	li $v0,4
+	syscall
+	
+la $a0,vett
+jal array_init
+
+la $a0,vett
+jal stampa_elementi
+
+#al termine devo leggere l'intero i 
+#richiamo array element  con indirizzo base e valore di i come parametro e ritorno 
+
+la $a0,leggointero
+li $v0,4
+syscall 
+
+li $t8,20   #valore compreso tra 0 e 19 
+li $t7,0 
+
+
+	
+
+input_intero:
+	
+	
+	
+	li $v0,5
+	syscall
+	
+	move $t0,$v0
+	
+	beq $t0,-1,exit
+	bge $t0,$t8,input_intero
+	blt $t0,$t7,input_intero
+	
+	
+	
+	la $a0,vett
+	move $a1,$t0
+	
+	jal restituisco
+	
+	move $t0,$v0
+	
+	
+	
+	move $a0,$t0
+	li $v0,1
+	syscall
+	
+	
+	j input_intero
+	
+	#Terminazione del programma
+	exit:
+	li $v0,10
+	syscall
+
+array_init:
+move $t9,$a0
+li $t0,0
+ciclo_inserimento:
+beq $t0,20,esci_ciclo
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+sw $t3,($t1)
+
+
+
+#il mio $t0 sarebbe i
+mul $t4,$t0,6 #i*6
+
+addi $t2,$t4,1 #i*6+1
+
+sw $t2,($t1)
+
+
+addi $t0,$t0,1
+j ciclo_inserimento 
+
+esci_ciclo:
+
+la $a0,stampa
+li $v0,4
+syscall 
+
+jr $ra 
+
+stampa_elementi:
+move $t9,$a0
+li $t0,0
+ciclo_stampa:
+beq $t0,20,esci_ciclo_st
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+
+move $a0,$t2
+
+li $v0,1
+syscall
+
+la $a0,spazio
+li $v0,4
+syscall 
+
+
+addi $t0,$t0,1
+j ciclo_stampa
+
+esci_ciclo_st:
+jr $ra 
+
+restituisco:
+							move $t9,$a0
+							move $t0,$a1
+							
+							ciclo_restituisco:
+								
+								
+								mul $t1,$t0,4
+								add $t1,$t1,$t9
+								
+								lw $t2,($t1)
+								
+								move $v0,$t2
+								jr $ra
+								

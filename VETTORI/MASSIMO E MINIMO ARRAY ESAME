@@ -1,0 +1,124 @@
+# Traccia 09-09-2013
+
+# Dovete scrivere un programma assembly il cui main allochi un array di 5 interi sullo stack
+
+# cioË arr Ë una variabile locale del main
+
+# una funzione riempi_array riceve il puntatore dell'array come parametro e 
+#riempie ogni singola componente con un valore ricevuto in input dall'utente
+
+# la funzione non ritorna alcun valore al main.
+
+# Una seconda funzione: trovamaxmin riceve come parametro l'indirizzo dell'array,
+# esegue un loop per individuare il massimo e il minimo valore e li ritorna in v0 e v1
+
+.data
+max: .asciiz "il massimo del vettore e' "
+min: .asciiz "  il minimo e' "
+
+
+.text
+
+
+
+.globl main
+main:
+
+addi $sp,$sp,-20 #decremento lo stack per fare entrare 5 interi
+move $s0,$sp 
+
+move $a0,$s0
+jal riempi_array 
+
+move $a0,$s0
+jal trova_max_min
+
+esci:
+addi $sp,$sp,20 #stack
+li $v0,10
+syscall 
+
+riempi_array:
+move $t9,$a0
+li $t0,0
+ciclo_riempimento:
+beq $t0,5,esci_ciclo
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+li $v0,5
+syscall
+
+sw $v0,($t1)
+
+addi $t0,$t0,1
+j ciclo_riempimento
+esci_ciclo:
+jr $ra 
+
+
+trova_max_min:
+
+#per trovare il massimo devo caricare il primo elemento dell'array fuori dal ciclo
+move $t9,$a0
+li $t0,1 
+
+lw $t6,0($t9) #primo elemento dell'array per il massimo
+lw $t7,0($t9) #primo elemento dell'array per il minimo 
+ciclo_max_min:
+beq $t0,5,esci_ciclo_max
+
+mul $t1,$t0,4
+add $t1,$t1,$t9
+lw $t3,($t1)
+
+#controllo se l'elemento $t3 � minore di min
+blt $t3,$t7,minimo
+
+j vai
+
+minimo:
+move $t7,$t3
+
+
+vai:
+bgt $t3,$t6,massimo
+
+addi $t0,$t0,1
+j ciclo_max_min
+massimo:
+move $t6,$t3
+
+
+
+
+addi $t0,$t0,1
+j ciclo_max_min
+esci_ciclo_max:
+
+
+
+
+# ritorno in v0 il massimo 
+
+la $a0,max
+li $v0,4
+syscall 
+
+move $v0,$t6
+move $a0,$v0
+li $v0,1
+syscall 
+
+la $a0,min
+li $v0,4
+syscall 
+
+move $v1,$t7
+move $a0,$v1
+li $v0,1
+syscall 
+
+
+jr $ra 
+

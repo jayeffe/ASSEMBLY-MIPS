@@ -1,0 +1,128 @@
+#Si scriva un programma in assembler MIPS che chieda 
+#all'utente di scrivere un elenco di numeri interi terminante con lo zero, memorizzi tali elementi in un vettore. 
+#Il programma deve scrivere su console l'elenco degli elementi di posizione pari
+
+.data
+frase1: .asciiz "inserimento vettore "
+frase2: .asciiz  "stampa vettore "
+frase3: .asciiz " " 
+accapo: .asciiz "\n"
+stampa_pari: .asciiz " stampa degli elementi in posizione pari "
+
+
+.text
+
+
+
+.globl main
+
+main:
+
+addi $sp,$sp,-20
+move $s0,$sp 
+
+
+la $a0,frase1
+li $v0,4
+syscall
+
+move $a0,$s0
+jal inserisci
+
+move $a0,$s0
+jal stampa
+
+move $a0,$s0
+jal elenco_pari
+
+
+
+esci:
+addi $sp,$sp,20 # incremento stack
+li $v0,10
+syscall
+
+inserisci:
+li $t0,0
+move $t9,$a0
+ciclo_inserimento:
+beq $t0,5,esci_ciclo
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+
+li $v0,5
+syscall
+
+sw $v0,($t1)
+
+addi $t0,$t0,1
+j ciclo_inserimento
+esci_ciclo:
+
+
+la $a0,frase2
+li $v0,4
+syscall
+
+jr $ra
+
+stampa:
+move $t9,$a0
+li $t0,0
+ciclo_stampa:
+beq $t0,5,esci_stampa
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+
+ move $a0,$t2
+ li $v0,1
+ syscall
+ 
+  la $a0,frase3
+  li $v0,4
+  syscall  
+
+addi  $t0,$t0,1
+j ciclo_stampa
+esci_stampa:
+
+la $a0,stampa_pari
+li $v0,4 
+syscall 
+
+jr $ra 
+
+elenco_pari:
+move $t9,$a0
+li $t0,0
+
+ciclo_pari:
+beq $t0,4,esci_pari
+mul $t1,$t0,4
+add $t1,$t1,$t9
+lw $t2,($t1)
+div $t3,$t0,2
+mfhi $t4
+beqz $t4, pari
+
+addi $t0,$t0,1 
+j ciclo_pari
+
+pari:
+move $a0,$t2
+li $v0,1
+syscall
+
+la $a0,frase3
+li $v0,4
+syscall
+
+
+addi $t0,$t0,1
+j ciclo_pari
+esci_pari:
+
+jr $ra 

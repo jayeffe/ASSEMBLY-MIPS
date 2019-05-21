@@ -1,0 +1,132 @@
+.data 
+frase1: .asciiz "inserisci elementi nel vettore \n "
+frase2: .asciiz "stampa del vettore "
+spazio: .asciiz " " 
+inverso: .asciiz "l'inverso e' " 
+
+.text
+
+
+
+.globl main
+main:
+
+#Stampa a video 
+la $a0,frase1
+li $v0,4
+syscall
+
+addi $sp,$sp,-16
+move $s0,$sp #sposto in $s0 e metto qui la testa del vettore 
+
+move $a0,$s0
+move $t9,$a0
+li $t0,0 #inizializzo il contatore 
+
+ciclo_inserimento:
+beq $t0,4,esci_inserimento
+mul $t1,$t0,4
+add $t1,$t1, $t9 #qui ci sommo la testa del vettore 
+
+#carico gli elementi nel vettore 
+li $v0,5
+syscall 
+
+#ora prendo gli elementi e li salvo nella memoria, facendo uno store 
+sw $v0,($t1) 
+addi $t0,$t0,1
+j ciclo_inserimento
+esci_inserimento:
+
+stampa_vettore:
+la $a0,frase2
+li $v0,4 
+syscall 
+
+move $a0,$s0
+move $t9,$a0 
+
+li $t0,0
+ciclo_stampa:
+beq $t0,4,esci_stampa
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1) #quindi sposto dalla memoria posta in $t1, al registro $t2
+
+move $a0,$t2
+li $v0,1
+syscall 
+
+la $a0,spazio
+li $v0,4
+syscall
+
+add $t0,$t0,1 
+j ciclo_stampa
+esci_stampa:
+
+#INVERSIONE DI UN VETTORE 
+
+# 1 2 3 4 
+#scorro il ciclo fino alla metà e poi vado a fare gli swap successivi 
+
+reverse_vect:
+move $a0,$s0
+move $t9,$a0
+li $t0,0 #contatore 
+li $t3,3 
+
+ciclo_reverse:
+beq $t0,2,esci_reverse 
+mul $t1,$t0,4
+add $t1,$t1,$t9 
+#accedo al primo elemento
+lw $t2,($t1) #primno elemento del vettore 
+
+#accedo all'ultimo elemento 
+mul $t4,$t3,4
+add $t4, $t4,$t9
+lw $t5,($t4) #in questo caso qui ho messo l'ultimo elemento 
+
+#ora devo solo swappare gli elementi
+sw $t5,($t1)
+sw $t2,($t4)
+
+addi $t3,$t3,-1
+addi $t0,$t0,1
+j ciclo_reverse
+esci_reverse:
+
+la $a0,inverso
+li $v0,4
+syscall
+
+stampa_inverso:
+move $a0,$s0
+move $t9,$a0
+li $t0,0
+ciclo_stampa_inverso:
+beq $t0,4,esci_stampa_inverso
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1) #quindi sposto dalla memoria posta in $t1, al registro $t2
+
+move $a0,$t2
+li $v0,1
+syscall 
+
+la $a0,spazio
+li $v0,4
+syscall
+
+add $t0,$t0,1 
+j ciclo_stampa_inverso
+esci_stampa_inverso:
+
+li $v0,10
+syscall
+
+
+

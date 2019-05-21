@@ -1,0 +1,160 @@
+# ordinamento vettore 
+
+.data
+frase1: .asciiz "inserire elementi nel vettore " 
+frase2: .asciiz "stampa elementi nel vettore "
+frase3: .asciiz " "
+accapo: .asciiz "\n"
+
+.text
+
+
+.globl main
+main:
+
+addi $sp,$sp,-16
+move $s0,$sp
+
+la $a0,frase1
+li $v0,4
+syscall
+
+move $a0,$s0
+jal inserisci
+
+move $a0,$s0
+jal stampa
+
+move $a0,$s0
+jal ordinamento
+
+move $a0,$s0
+jal nuova_stampa
+
+
+esci:
+addi $sp,$sp,16
+li $v0,10
+syscall
+
+
+
+
+
+inserisci:
+move $t9,$a0
+li $t0,0
+ciclo_inserimento:
+beq $t0,4,esci_ciclo
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+li $v0,5
+syscall
+
+sw $v0,($t1)
+
+addi $t0,$t0,1
+j ciclo_inserimento
+esci_ciclo:
+
+la $a0,frase2
+li $v0,4
+syscall
+
+jr $ra
+
+stampa:
+move $t9,$a0
+li $t0,0
+ciclo_stampa:
+beq $t0,4,esci_stampa
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+move $a0,$t2
+
+li $v0,1
+syscall
+
+la $a0,frase3
+li $v0,4
+syscall 
+
+addi $t0,$t0,1
+j ciclo_stampa
+esci_stampa:
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+jr $ra 
+
+ordinamento:
+#proviamo a fare l'algoritmo di ordinamento come si fa con il c utilizzando due for annidati (sfruttando pero il ciclo while 
+#il ciclo di ordinamento e' fatto in questo modo 
+#il loop estero parte da 0 e va fino alla lunghezza del vettore -1 (visto che confronta il numero con il successivo
+#il loop interno parte da i+1 e confronta per l'intera lunghezza il vettore
+
+move $t9,$a0 
+li $t0,0
+ciclo_esterno:
+beq $t0,3,esci_esterno
+#ora j=i+1
+addi $t3,$t0,1 #il mio t3 sarebbe j
+
+ciclo_interno:
+beq $t3,4,esci_interno
+mul $t1,$t0,4
+add $t1,$t1,$t9
+lw $t2,($t1) #carico il corrente
+
+mul $t4,$t3,4
+add $t4,$t4,$t9
+lw  $t5,($t4)
+
+blt $t4,$t4,ordina
+sw $t2,($t4)
+sw $t5,($t1)
+
+ordina:
+
+ addi $t3,$t3,1
+j ciclo_interno
+esci_interno:
+
+addi $t0,$t0,1
+j ciclo_esterno
+esci_esterno:
+
+la $a0,accapo
+li $v0,4
+syscall
+
+jr $ra
+
+nuova_stampa:
+
+move $t9,$a0
+li $t0,0
+ciclo_stampa_new:
+beq $t0,4,esci_stampa_new
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+move $a0,$t2
+
+li $v0,1
+syscall
+
+la $a0,frase3
+li $v0,4
+syscall 
+
+addi $t0,$t0,1
+j ciclo_stampa_new
+esci_stampa_new:
+jr $ra 

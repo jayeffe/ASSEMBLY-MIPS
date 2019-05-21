@@ -1,0 +1,167 @@
+#Scrivere un programma che calcola la media aritmetica degli elementi di un vettore poi 
+#la sostituisce a tutti gli elementi maggiori di essi.
+
+.data
+frase1: .asciiz "inserisci elemento nel vettore "
+frase2: .asciiz "stampa elementi nel vettore "
+frase3: .asciiz " "
+medias: .asciiz "la media int è " 
+accapo: .asciiz "\n " 
+
+.text
+
+
+.globl main
+main:
+
+addi $sp,$sp,-16
+move $s0,$sp
+
+la $a0,frase1
+li $v0,4
+syscall
+
+move $a0,$s0
+jal inserisci
+
+move $a0,$s0
+jal stampa
+
+
+move $a0,$s0
+jal media 
+
+move $a0,$s0
+jal controllo 
+
+move $a0,$s0
+jal stampa_new 
+
+esci:
+addi $sp,$sp,16
+li $v0,10
+syscall
+
+inserisci:
+move $t9,$a0
+li $t0,0
+ciclo_inserimento:
+beq $t0,4,esci_inserimento
+
+li $v0,5
+syscall
+
+sw $v0,($t9)
+
+addi $t0,$t0,1
+addi $t9,$t9,4 #avanzo di 4
+j ciclo_inserimento 
+esci_inserimento:
+
+la $a0,frase2
+li $v0,4
+syscall
+
+jr $ra
+
+stampa:
+move $t9,$a0
+li $t0,0
+ciclo_stampa:
+beq $t0,4,esci_stampa
+
+lw $t2,($t9)
+move $a0,$t2
+li $v0,1
+syscall 
+
+la $a0,frase3
+li $v0,4
+syscall 
+
+
+addi $t0,$t0,1
+addi $t9,$t9,4
+j ciclo_stampa
+esci_stampa:
+jr $ra
+
+media:
+move $t9,$a0
+li $t0,0
+li $t4,0 #somma=0
+li $t8,4
+ciclo_media:
+beq $t0,4,esci_media
+
+lw $t2,($t9)
+
+add $t4,$t4,$t2  #somma=somma+v[i]
+
+div $t4,$t8 
+mflo $t5
+move $s2,$t5 #carico la media 
+incrementa:
+addi $t9,$t9,4
+addi $t0,$t0,1 
+j ciclo_media
+esci_media:
+
+
+#la media è data dalla somma/num elemeti
+
+la $a0,medias
+li $v0,4
+syscall 
+
+move $a0,$t5
+li $v0,1
+syscall 
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+jr $ra 
+
+controllo:
+move $t9,$a0
+li $t0,0
+ciclo_controllo:
+beq $t0,4,esci_controllo
+
+lw $t2,($t9) #carico l'elemento 
+
+bgt $t2,$s2,continua 
+j aggiungi
+continua:
+sw $s2,($t9)
+aggiungi:
+addi $t9,$t9,4
+addi $t0,$t0,1
+j ciclo_controllo 
+esci_controllo:
+jr $ra 
+
+
+stampa_new:
+move $t9,$a0
+li $t0,0
+ciclo_stampa_new:
+beq $t0,4,esci_stampa_new
+
+lw $t2,($t9)
+move $a0,$t2
+li $v0,1
+syscall 
+
+la $a0,frase3
+li $v0,4
+syscall 
+
+
+addi $t0,$t0,1
+addi $t9,$t9,4
+j ciclo_stampa_new
+esci_stampa_new:
+jr $ra

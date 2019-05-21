@@ -1,0 +1,70 @@
+.data 
+frase1: .asciiz "inserisci elementi nel vettore \n "
+frase2: .asciiz "stampa del vettore "
+spazio: .asciiz " " 
+
+.text
+
+
+
+.globl main
+main:
+
+#Stampa a video 
+la $a0,frase1
+li $v0,4
+syscall
+
+addi $sp,$sp,-16
+move $s0,$sp #sposto in $s0 e metto qui la testa del vettore 
+
+move $a0,$s0
+li $t0,0 #inizializzo il contatore 
+move $t9,$a0
+ciclo_inserimento:
+
+beq $t0,4,esci_inserimento
+mul $t1,$t0,4
+add $t1,$t1, $t9 #qui ci sommo la testa del vettore 
+
+#carico gli elementi nel vettore 
+li $v0,5
+syscall 
+
+#ora prendo gli elementi e li salvo nella memoria, facendo uno store 
+sw $v0,($t1) 
+addi $t0,$t0,1
+j ciclo_inserimento
+esci_inserimento:
+
+stampa_vettore:
+la $a0,frase2
+li $v0,4 
+syscall 
+
+move $a0,$s0
+move $t9,$a0 
+li $t0,0
+ciclo_stampa:
+beq $t0,4,esci_stampa
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1) #quindi sposto dalla memoria posta in $t1, al registro $t2
+
+move $a0,$t2
+li $v0,1
+syscall 
+
+la $a0,spazio
+li $v0,4
+syscall
+
+add $t0,$t0,1 
+
+
+j ciclo_stampa
+esci_stampa:
+
+li $v0,10
+syscall 

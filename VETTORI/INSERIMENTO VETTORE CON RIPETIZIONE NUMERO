@@ -1,0 +1,140 @@
+#Scrivere un programma che acquisisca da input un vettore di N numeri interi, 
+#e riporti in uscita la frequenza di ciascun intero presente nel vettore. 
+
+.data
+.align 2
+vettore: .space 20 #5 elementi nel vettore
+inserisci_el: .asciiz "inserisci elementi "
+stampa_el: .asciiz "stampa degli elementi "
+numero: .asciiz "il numero--->  "
+accapo: .asciiz "\n"
+volte: .asciiz ": volte "
+
+spazio: .asciiz " "
+
+
+.text
+
+
+.globl main
+main:
+la $a0,inserisci_el
+li $v0,4
+syscall
+
+la $a0,vettore
+jal inserisci
+
+la $a0,vettore
+jal stampa 
+
+la $a0,vettore
+
+jal confronta_elementi
+
+esci:
+li $v0,10
+syscall
+
+inserisci:
+move $t9,$a0
+li $t0,0
+ciclo_inserimento:
+beq $t0,5,esci_inserimento
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+li $v0,5
+syscall
+
+sw $v0,($t1)
+
+addi $t0,$t0,1
+j ciclo_inserimento
+esci_inserimento:
+
+jr $ra 
+
+stampa:
+move $t9,$a0
+li $t0,0
+ciclo_stampa:
+beq $t0,5,esci_stampa
+
+mul $t1,$t0,4
+add $t1,$t1,$t9
+
+lw $t2,($t1)
+
+move $a0,$t2
+li $v0,1
+syscall
+
+la $a0,spazio
+li $v0,4
+syscall
+
+
+addi $t0,$t0,1
+j ciclo_stampa
+esci_stampa:
+
+jr $ra 
+
+
+confronta_elementi:
+move $t9,$a0
+li $t6,0
+li $t0,0
+
+
+ciclo_esterno:
+beq $t0,5,esci_esterno
+li $t3,0
+ciclo_interno:
+beq $t3,5,esci_interno
+
+mul $t1,$t0,4
+add $t1,$t1,$t9
+lw $t2,($t1) #elemento[i] 
+
+mul $t4,$t3,4
+add $t4,$t4,$t9
+lw $t5,($t4)
+
+beq $t2,$t5,incrementa
+addi $t3,$t3,1 
+j ciclo_interno
+incrementa:
+addi $t6,$t6,1 
+
+
+addi $t3,$t3,1
+j ciclo_interno
+esci_interno:
+
+la $a0,numero
+li $v0,4
+syscall 
+
+move $a0,$t2
+li $v0,1
+syscall
+
+la $a0,volte 
+li $v0,4
+syscall 
+
+move $a0,$t6
+li $v0,1
+syscall
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+li $t6,0 
+addi $t0,$t0,1
+j ciclo_esterno
+esci_esterno:
+jr $ra 
