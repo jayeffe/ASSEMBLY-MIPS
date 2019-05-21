@@ -1,0 +1,60 @@
+.data
+inserisci: .asciiz "inserisci la stringa "
+str: .space 100
+str1: .space 200
+
+.text
+
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,str
+li $v0,8
+li $a1,98
+syscall
+
+la $a0,str
+la $a1,str1
+jal fvocali
+
+la $a0,str1
+li $v0,4
+syscall
+
+esci:
+li $v0,10
+syscall
+
+fvocali:
+move $t9,$a0
+move $t8,$a1
+li $t5,'f'
+ciclo_inserimento:
+lbu $t2,($t9)
+beq $t2,'\n',uscita 
+
+beq $t2,'a',continua
+beq $t2,'e',continua
+beq $t2,'i',continua
+beq $t2,'o',continua
+beq $t2,'u',continua
+
+
+sb $t2,($t8)
+addi $t8,$t8,1
+addi $t9,$t9,1
+j ciclo_inserimento
+continua:
+sb $t5,($t8)
+addi $t9,$t9,1
+addi $t8,$t8,1
+j ciclo_inserimento
+uscita:
+
+jr $ra 

@@ -1,0 +1,76 @@
+#MAIUSCOLA POSIZIONE PARI 
+
+.data
+inserisci: .asciiz "inserire la stringa "
+str: .space 100 
+
+
+.text
+
+
+
+.globl main
+main:
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,str
+li $v0,8
+li $a1,98
+syscall
+
+
+la $a0,str 
+jal posizione_pari
+
+la $a0,str
+li $v0,4
+syscall 
+
+esci:
+li $v0,10
+syscall
+
+
+posizione_pari:
+move $t9,$a0
+
+li $t0,0 #flag posizione pari 
+
+ciclo_pari:
+lbu $t2,($t9)
+beq $t2,'\n',uscita_ciclo
+
+beq $t2,32,cambia_stato
+
+beq $t0,0,flag0
+j flag1
+
+flag0:
+blt $t2,96,continua
+bgt $t2,122,continua
+addi $t2,$t2,-32
+sb $t2,($t9)
+addi $t9,$t9,1
+j ciclo_pari
+continua:
+addi $t9,$t9,1
+j ciclo_pari
+
+flag1:
+blt $t2,64,prosegui
+bgt $t2,90,prosegui
+addi $t2,$t2,32
+sb $t2,($t9)
+addi $t9,$t9,1
+j ciclo_pari 
+prosegui:
+addi $t9,$t9,1
+j ciclo_pari
+cambia_stato:
+not $t0,$t0
+addi $t9,$t9,1
+j ciclo_pari
+uscita_ciclo:
+jr $ra 

@@ -1,0 +1,82 @@
+#conta vocali accentate
+
+.data
+inserisci: .asciiz "inserisci la stringa "
+str: .space 100
+vocali_accentate: .asciiz "le vocali accentate sono "
+
+
+
+
+
+.text
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,str
+li $a1,98
+li $v0,8
+syscall
+
+
+la $a0,str
+jal conta_vocali
+move $t8,$v0
+
+
+la $a0,vocali_accentate
+li $v0,4
+syscall
+
+
+move $a0,$t8
+li $v0,1
+syscall
+
+
+
+
+esci:
+li $v0,10
+syscall
+
+
+conta_vocali:
+move $t9,$a0 #per convenzione MIPS in a0, passo solo i parametri,poi basta
+li $t0,0
+loop_conta_vocali:
+lbu $t2,($t9)
+beqz $t2,esci_loop
+
+beq $t2,'à',continua
+beq $t2,'è',continua
+beq $t2,'é',continua
+beq $t2,'ì',continua
+beq $t2,'ò',continua
+beq $t2,'ù',continua
+
+
+addi $t9,$t9,1
+j loop_conta_vocali
+continua:
+
+addi $t0,$t0,1
+
+
+addi $t9,$t9,1
+j loop_conta_vocali
+esci_loop:
+
+move $v0,$t0
+jr $ra 
+
+
+
+
+

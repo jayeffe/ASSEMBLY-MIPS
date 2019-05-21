@@ -1,0 +1,61 @@
+#CALCOLARE LUNGHEZZA DELLA STRINGA
+
+#scrivo un programma che mi calcola la lunghezza della stringa e me la ritorna in $v0
+#trovata la lunghezza della stringa, se essa è maggiore di 20, mi avvisa e il programma termina 
+
+.data 
+str: .space 100
+maggiore20: .asciiz  " la stringa è maggiore di 20 char "
+minore20: .asciiz "la stringa è minore di 20 char "
+lunghezza: .asciiz "la lunghezza e' " 
+
+.text
+
+
+.globl main
+
+main:
+
+
+la $a0,str
+li $v0,8
+li $a1,98
+syscall 
+
+jal lunghezza_stringa
+
+blt $v0,20,minore 
+la $a0,maggiore20
+li $v0,4
+syscall 
+j esci
+
+minore:
+la $a0,minore20
+li $v0,4
+syscall
+
+
+esci:
+li $v0,10
+syscall
+
+lunghezza_stringa:
+move $t9,$a0
+li $t0,0
+ciclo:
+lbu $t1,($t9)
+beqz $t1,esci_ciclo
+
+addiu $t0,$t0,1 
+
+addiu $t9,$t9,1
+j ciclo
+esci_ciclo:
+subi $v0,$t0,1  #il ritorno lo piazzo in $v0,cosi sto apposto, ma ci levo 1 per il semplice fatto che controllando fino a zero includo anche il terminatore 
+#che è un carattere 
+
+
+
+
+jr $ra 

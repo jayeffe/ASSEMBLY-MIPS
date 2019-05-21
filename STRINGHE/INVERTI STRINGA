@@ -1,0 +1,91 @@
+.data
+inserisci: .asciiz "inserisci la stringa "
+stringa: .space 100
+
+.text
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,stringa
+li $v0,8
+li $a1,98
+syscall 
+
+la $a0,stringa
+jal lunghezza
+
+move $a1,$v0
+la $a0,stringa
+jal inverti
+
+esci:
+li $v0,10
+syscall
+
+lunghezza:
+move $t9,$a0
+li $t0,0
+ciclo_lunghezza:
+lbu $t2,($t9)
+beqz $t2,esci_ciclo
+
+addi $t0,$t0,1
+
+
+addi $t9,$t9,1
+j ciclo_lunghezza
+esci_ciclo:
+subi $v0,$t0,1
+jr $ra 
+
+
+inverti:
+move $t9,$a0
+addi $a1,$a1,-1
+li $t0,0
+
+ciclo_inverti:
+bge  $t0,$a1,esci_inverti
+
+
+
+add $t1,$t0,$t9
+lbu $t2,($t1)
+
+add $t3,$a1,$t9
+lbu $t4,($t3)
+
+bgt $t0,$a1,swap
+
+sb $t2,($t3)
+sb $t4,($t1)
+
+
+addi $a1,$a1,-1
+addi $t0,$t0,1
+j ciclo_inverti
+
+swap:
+addi $a1,$a1,-1
+addi $t0,$t0,1
+
+breack:
+j esci_inverti
+
+addi $a1,$a1,-1
+addi $t0,$t0,1
+j ciclo_inverti
+esci_inverti:
+
+la $a0,stringa
+li $v0,4
+syscall
+
+jr $ra 
+
+

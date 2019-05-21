@@ -1,0 +1,71 @@
+.data 
+str:.space 100
+.text 
+
+.globl main
+
+main:
+
+la $a0,str
+li $a1,98
+li $v0,8
+syscall
+
+la $a0,str
+jal cammellizata
+
+li $v0,10
+syscall
+
+
+	cammellizata:
+	move $t9,$a0
+	li $t0,0 #inizializzo il flag a zero questo mi trasforma da maiuscolo a minuscolo
+	
+	ciclo:
+	lbu $t1,($t9)
+	beq $t1,'\n', esci
+	beq $t1,32,cambia_stato
+	beq $t0,0,maiuscolo
+	#qui quando lo stato e' 1
+	j andiamo 
+	
+	
+	cambia_stato:
+	li $t0,0, #poiche voglio zero , basta che mi scrivo una stringa e lo noto tranquillamente 
+	addiu $t9,$t9,1
+	j ciclo
+	
+	andiamo:
+	blt $t1,64,minuscolo
+	bgt $t1,90,minuscolo
+	li $t0,0 
+	addiu $t1,$t1,32
+	sb $t1,($t9)
+	addiu $t9,$t9,1
+	j ciclo
+	
+	minuscolo:
+	li $t0,0
+	addiu $t9,$t9,1
+	j ciclo
+	
+	
+	maiuscolo:
+	blt $t1,96,continua
+	bgt $t1,122,continua
+	addiu $t1,$t1,-32
+	sb $t1,($t9)
+	#qua lo stato deve aggiornarsi ad 1 
+	li $t0,1
+	addiu $t9,$t9,1
+	j ciclo
+	continua:
+	li $t0,1
+	addiu $t9,$t9,1
+	j ciclo
+	
+esci:
+la $a0,str
+li $v0,4
+syscall 

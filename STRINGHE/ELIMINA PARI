@@ -1,0 +1,74 @@
+#elimina_posizione pari
+
+.data
+inserisci: .asciiz "inserisci la stringa "
+str: .space 100
+
+.text
+
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,str
+li $v0,8
+li $a1,98
+syscall
+
+la $a0,str
+jal elimina_pari
+
+la $a0,str
+li $v0,4
+syscall 
+
+
+esci:
+li $v0,10
+syscall
+
+
+elimina_pari:
+move $t9,$a0
+li $t0,0
+li $t1,2
+
+loop_esterno:
+lbu $t2,($t9)
+beq $t2,'\n',esci_esterno
+addi $t0,$t0,1
+
+div $t0,$t1
+mfhi $t3
+
+bnez $t3,elimina
+
+addiu $t9,$t9,1
+j loop_esterno
+elimina:
+move $t8,$t9
+move $t7,$t9
+
+addiu $t7,$t7,1
+
+loop_interno:
+lbu $t6,($t7)
+sb $t6,($t8)
+
+beqz $t6,esci_interno
+
+addiu $t8,$t8,1
+addiu $t7,$t7,1
+j loop_interno
+esci_interno:
+
+
+
+j loop_esterno
+esci_esterno:
+jr $ra 

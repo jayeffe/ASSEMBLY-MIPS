@@ -1,0 +1,74 @@
+# se il carattere e una consonante quella di dopo la trasformo in minuscolo se è maiuscola oppure viceversa 
+.data
+inserisci: .asciiz "inserisci la stringa "
+str: .space 100
+
+.text
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,str
+li $a1,98
+li $v0,8
+syscall
+
+
+la $a0,str
+jal maiuscolo_consonanti_viceversa 
+
+la $a0,str
+li $v0,4
+syscall
+
+esci:
+li $v0,10
+syscall
+
+maiuscolo_consonanti_viceversa:
+move $t9,$a0
+
+ciclo_consonanti:
+lbu $t2,($t9)
+beq $t2,'\n',esci_ciclo
+
+#cosi escludo le vocali 
+
+beq $t2,'a',continua
+beq $t2,'e',continua
+beq $t2,'i',continua
+beq $t2,'o',continua
+beq $t2,'u',continua
+
+blt $t2,97,prosegui
+bgt $t2,122,prosegui
+
+addi $t2,$t2,-32
+sb $t2,($t9)
+addi $t9,$t9,1
+j ciclo_consonanti
+prosegui:
+
+
+blt $t2,65,prosegui_m
+bgt $t2,90,prosegui_m
+
+addi $t2,$t2,32
+sb $t2,($t9)
+addi $t9,$t9,1
+j ciclo_consonanti
+
+prosegui_m:
+
+continua:
+
+
+addi $t9,$t9,1
+j ciclo_consonanti
+esci_ciclo:
+jr $ra

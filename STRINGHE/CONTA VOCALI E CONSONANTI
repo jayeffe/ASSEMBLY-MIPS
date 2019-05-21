@@ -1,0 +1,82 @@
+# inserire una stringa e contare le vocali e le consanti 
+
+.data 
+str: .space 100
+stringa1: .asciiz "inserire la stringa "
+stringa2: .asciiz "il numero delle vocali è "
+stringa3: .asciiz "il numero delle consonanti e' "
+accapo: .asciiz "\n "
+
+
+.text
+
+
+
+.globl main
+main:
+
+la $a0,stringa1
+li $v0,4
+syscall
+
+la $a0,str
+li $a1,98  #la lunghezza della stringa e' alla -2 poichè ci saranno come carattere anche il terminatore e il fine stringa 
+li $v0,8
+syscall 
+
+
+la $t2,str
+li $t3,0 #contatore vocali
+li $t4,-1  #contaotre consonanti 
+
+ciclo:
+lbu $t1,($t2) #elemento il memoria 
+beqz $t1,esci
+
+beq $t1,'a',continua
+beq $t1,'e',continua
+beq $t1,'i',continua
+beq $t1,'o',continua
+beq $t1,'u',continua
+
+
+addiu $t2,$t2,1 #incremento la testa 
+addi $t4,$t4,1 #incremento le consonanti 
+j ciclo
+
+continua:
+addi $t3,$t3,1
+addiu $t2,$t2,1
+j ciclo
+
+esci:
+la $a0,accapo
+li $v0,4
+syscall 
+
+
+la $a0,stringa2
+li $v0,4
+syscall
+
+move $a0,$t3
+li $v0,1
+syscall 
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+
+la $a0,stringa3
+li $v0,4
+syscall
+
+move $a0,$t4
+li $v0,1
+syscall 
+
+
+
+
+

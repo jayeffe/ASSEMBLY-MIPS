@@ -1,0 +1,34 @@
+#LETTURA E STAMPA DI UNA STRINGA 
+
+.data
+str: .space 100
+inserisci: .asciiz "inserisci stringa "
+
+
+.text
+
+.globl main
+main:
+
+#lettura 
+
+la $a0,inserisci
+li $v0,4
+syscall 
+
+
+la $a0,str
+li $v0,8
+
+li $a1,98
+syscall 
+
+
+#stampa:
+la $a0,str
+li $v0,4
+syscall
+
+
+li $v0,10
+syscall 

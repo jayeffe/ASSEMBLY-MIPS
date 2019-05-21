@@ -1,0 +1,49 @@
+#passare da minuscolo a maiuscolo 
+.data
+str: .space 100
+inserisci: .asciiz "inserisci stringa "
+
+
+.text
+
+.globl main
+main:
+
+#lettura 
+
+la $a0,inserisci
+li $v0,4
+syscall 
+
+
+la $a0,str
+li $v0,8
+
+li $a1,98 #limite stringa di dimensione -2 poichè+ includo il terminatore e il fine stringa 
+syscall 
+
+move $t9,$a0 #testa della stringa 
+ciclo:
+lbu $t1,($t9) #qui ho l'elemento in memoria 
+beqz $t1,scorri
+
+
+bltu $t1,97,continua
+bgtu $t1,122, continua
+
+addiu $t1,$t1,-32
+sb $t1,($t9)
+addiu $t9,$t9,1
+j ciclo
+continua:
+
+addiu $t9,$t9,1
+j ciclo
+scorri:
+
+la $a0,str
+li $v0,4
+syscall
+
+li $v0,10
+syscall 

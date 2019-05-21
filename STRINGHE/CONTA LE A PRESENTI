@@ -1,0 +1,52 @@
+#CONTA LE A PRESENTI IN UNA STRINGA 
+.data
+stringa1: .asciiz "inserisci la stringa "
+str: .space 100
+stringa2: .asciiz "il numero delle a che ho contato e' "
+accapo: .asciiz "\n" 
+
+
+.text
+
+
+.globl main
+main:
+la $a0,stringa1
+li $v0,4
+syscall 
+
+la $a0,str
+li $a1,98 # max 
+li $v0,8
+syscall
+
+la $a0,str
+move $t9,$a0 #sposto la testa della stringa 
+
+li $t8,0
+
+ciclo:
+lbu $t2,($t9)
+beqz $t2, uscita 
+beq $t2, 'a',continua 
+
+addiu $t9,$t9,1 #avanzo nella testa 
+j ciclo
+
+continua:
+addi $t8,$t8,1
+addiu $t9,$t9,1 #avanzo nella testa 
+j ciclo
+uscita:
+
+la $a0,stringa2
+li $v0,4
+syscall 
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+move $a0,$t8
+li $v0,1
+syscall 

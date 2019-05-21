@@ -1,0 +1,78 @@
+#camel case con contatore
+
+.data
+inserisci: .asciiz "inserisci la stringa "
+str: .space 100
+
+.text
+
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,str
+li $v0,8
+li $a1,98
+syscall
+
+la $a0,str
+jal stringa_camel
+
+la $a0,str
+li $v0,4
+syscall
+
+esci:
+li $v0,10
+syscall
+
+###################
+stringa_camel:
+move $t9,$a0
+li $t0,0
+li $t1,2
+ciclo_camel:
+lbu $t2,($t9)
+beq $t2,'\n',uscita_ciclo
+
+beq $t2,32,azzera_contatore
+addi $t0,$t0,1
+
+div $t0,$t1
+mfhi $t3
+ 
+bnez $t3,maiuscolo
+
+blt $t2,64,prosegui
+bgt $t2,90,prosegui
+addi $t2,$t2,32
+sb $t2,($t9)
+addi $t9,$t9,1
+j ciclo_camel 
+
+prosegui:
+
+addi $t9,$t9,1
+j ciclo_camel 
+maiuscolo:
+blt $t2,96,continua
+bgt $t2,122,continua
+addi $t2,$t2,-32
+sb $t2,($t9)
+addi $t9,$t9,1
+j ciclo_camel 
+continua:
+
+addi $t9,$t9,1
+j ciclo_camel 
+azzera_contatore:
+li $t0,0
+addi $t9,$t9,1
+j ciclo_camel
+uscita_ciclo:
+jr $ra

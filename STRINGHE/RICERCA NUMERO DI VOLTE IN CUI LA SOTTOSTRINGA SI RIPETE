@@ -1,0 +1,147 @@
+#ALGORITMO NAIVE SORT PER RICERCA SOTTOSTRINGA
+.data
+stringa: .space 100
+sottostringa: .space 50
+
+frase1: .asciiz "inserire la stringa "
+frase2: .asciiz "inserire la sottostringa "
+frase3: .asciiz "la stringa e' contenuta "
+frase6: .asciiz "\n sottostringa trovata    "
+
+.text
+
+
+.globl main
+main:
+
+la $a0,frase1
+li $v0,4
+syscall
+
+la $a0,stringa
+li $v0,8
+li $a1,98
+syscall
+
+la $a0,frase2
+li $v0,4
+syscall
+
+la $a0,sottostringa
+li $v0,8
+li $a1,48
+syscall
+
+la $a0,stringa
+jal lunghezza_stringa
+
+move $s0,$v0
+
+
+la $a0,sottostringa
+jal lunghezza_sottostringa
+
+
+move $s1,$v0
+
+
+move $a0,$s1
+
+
+la $a0,stringa
+la $a1,sottostringa 
+jal ricerca_sottostringa
+
+move $t0,$v0
+
+la $a0,frase6
+li $v0,4
+syscall 
+
+move $a0,$t0
+li $v0,1
+syscall 
+
+
+
+
+esci:
+li $v0,10
+syscall
+
+			lunghezza_stringa:	
+				move $t9,$a0
+				li $t0,0
+				ciclo_lunghezza_stringa:
+					lbu $t2,($t9)
+				beqz $t2,uscita_stringa
+
+				addi $t0,$t0,1 
+				addi $t9,$t9,1
+				j ciclo_lunghezza_stringa
+					uscita_stringa:
+				subiu $v0,$t0,1
+				jr $ra 
+
+
+lunghezza_sottostringa:
+move $t9,$a0
+li $t0,0
+ciclo_lunghezza_sottostringa:
+lbu $t2,($t9)
+beqz $t2,uscita_sottostringa
+
+addi $t0,$t0,1 
+addi $t9,$t9,1
+j ciclo_lunghezza_sottostringa
+uscita_sottostringa:
+subiu $v0,$t0,1
+jr $ra 
+
+					ricerca_sottostringa:
+					  move $t9,$a0
+					  move $t8,$a1 
+					  li $v0,0 #contatore sottostringhe 
+					  li $t0,0
+					  sub $t1,$s0,$s1
+			ciclo_esterno:
+			             bge $t0,$t1,esci_esterno
+			             li $t2,1 #trovato=1
+			             li $t3,0 #j=0
+			ciclo_interno:
+			             bge $t3,$s1,esci_interno
+			             add $t4,$t0,$t9
+			             add $t4,$t4,$t3
+			             lb $t5,($t4)
+			             add $t6,$t3,$t8
+			             lbu $t7,($t6)
+			             
+			             beq $t5,$t7,skip
+			             
+			             li $t2,0
+			             j breack
+			             
+			             skip:
+			           
+			             addi $t3,$t3,1
+			             j ciclo_interno
+			             esci_interno:
+			      
+			        breack:
+			            beqz $t2,trovato
+			            
+			            addi $v0,$v0,1
+			            
+			            trovato:
+			            addi $t0,$t0,1
+			            
+			            j ciclo_esterno
+			            
+			            esci_esterno:
+			            jr $ra 
+			             
+			             
+			             
+
+			             
+					

@@ -1,0 +1,61 @@
+#Data una stringa di caratteri, lunga al massimo 300 caratteri, inserire il carattere * (asterisco) dopo ogni lettera A che si trova
+#in essa e far stampare la nuova stringa così ottenuta.
+.data
+inserisci: .asciiz "inserisci la stringa "
+str: .space 100
+
+
+.text
+
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,str
+li $v0,8
+li $a1,98
+syscall
+
+la $a0,str
+
+jal asterisco
+
+la $a0,str
+li $v0,4
+syscall 
+
+
+esci:
+li $v0,10
+syscall
+
+asterisco:
+move $t9,$a0
+
+ciclo_asterisco:
+li $t4,'*'
+lbu $t2,($t9)
+beq $t2,'\n',uscita_ciclo
+
+beq $t2,'a',continua
+beq $t2,'e',continua
+beq $t2,'i',continua
+beq $t2,'o',continua
+beq $t2,'u',continua
+
+addi $t9,$t9,1 
+j ciclo_asterisco
+continua:
+
+sb $t4,($t9)
+
+addi $t9,$t9,1 
+j ciclo_asterisco
+uscita_ciclo:
+
+jr $ra 

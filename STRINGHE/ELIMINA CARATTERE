@@ -1,0 +1,71 @@
+#elimina carattere 
+
+.data
+inserisci: .asciiz "inserisci la stringa "
+str: .space 100
+
+.text
+
+
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,str
+li $v0,8
+li $a1,98
+syscall
+
+la $a0,str
+jal elimina_char
+
+la $a0,str
+li $v0,4
+syscall 
+
+
+esci:
+li $v0,10
+syscall
+
+
+elimina_char:
+move $t9,$a0
+
+loop_esterno:
+lbu $t2,($t9)
+beq $t2,'\n',esci_esterno
+
+#controllo se l'elemento è pari al carattere inserito
+beq $t2,'a'delete
+
+addiu $t9,$t9,1
+j loop_esterno 
+delete:
+move $t8,$t9 #utilizzo questo registro per caricare l'elemento corrente e per non perderlo  
+move $t7,$t9 #utilizzo questo registro per caricare il successivo, ma ancora non ci arrivo a quello
+
+addiu $t7,$t7,1 #elemento successivo 
+
+
+loop_interno:
+lbu $t6,($t7) #carico il successivo
+
+sb $t6,($t8) #successivo nel corrente
+
+
+beqz $t6,esci_interno
+
+addiu $t8,$t8,1
+addiu $t7,$t7,1
+j loop_interno 
+esci_interno:
+
+j loop_esterno 
+esci_esterno:
+jr $ra 

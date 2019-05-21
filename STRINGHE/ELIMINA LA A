@@ -1,0 +1,71 @@
+#ELIMINA CARATTERE 
+
+.data
+inserisci: .asciiz "inserisci la stringa "
+str: .space 100
+
+
+
+
+
+.text
+
+
+
+.globl main
+main:
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,str
+li $v0,8
+li $a1,98
+syscall
+
+la $a0,str
+jal elimina
+
+
+esci:
+li $v0,10
+syscall
+
+
+elimina:
+move $t9,$a0
+
+ciclo_eliminazione:
+lbu $t2,($t9)
+beq $t2,'\n',esci_ciclo
+
+beq $t2,'a' ,delete
+addi $t9,$t9,1
+j ciclo_eliminazione
+
+delete:
+move $t8,$t9 #ora qui ho l'indirizzo del successivo
+move $t7,$t9 #ora qui l'indirizzo del corrente 
+
+#vado al successivo
+addi $t8,$t8,1 
+
+ciclo_interno:
+lbu $t5,($t8)
+beqz $t5,continua
+
+sb  $t5,($t7)
+addi $t8,$t8,1 
+addi $t7,$t7,1 
+j ciclo_interno
+continua:
+addi $t9,$t9,1
+j ciclo_eliminazione
+
+esci_ciclo:
+
+la $a0,str
+li $v0,4
+syscall 
+
+jr $ra 

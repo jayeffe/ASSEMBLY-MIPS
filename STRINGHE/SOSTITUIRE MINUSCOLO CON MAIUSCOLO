@@ -1,0 +1,71 @@
+# sosituire un carattere minuscolo in maiuscolo 
+
+.data
+inserisci: .asciiz "inserisci la stringa "
+maiuscolo: .asciiz "la stringa in maiuscolo e' "
+
+str: .space 25 
+
+
+.text
+
+
+
+
+.globl main
+main:
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+la $a0,str
+li $a1,23
+li $v0,8
+syscall
+
+la $a0,str
+jal lowerupper
+
+
+la $a0,maiuscolo
+li $v0,4
+syscall 
+
+la $a0,str
+li $v0,4
+syscall 
+
+
+esci:
+li $v0,10
+syscall
+
+
+lowerupper:
+
+lbu $s0,($a0) #passo la testa della stringa
+beqz $s0,exit
+
+blt $s0,97,continua
+bgt $s0,122,continua
+
+addi $s0,$s0,-32 
+sb $s0,($a0)
+
+continua:
+addi $sp,$sp,-8
+sw $a0,0($sp)
+sw $ra 4($sp)
+
+addi $a0,$a0,1
+jal lowerupper 
+
+lw $a0,0($sp)
+lw $ra,4($sp)
+
+addi $sp,$sp,8
+jr $ra 
+
+exit:
+jr $ra 
