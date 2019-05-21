@@ -1,0 +1,169 @@
+#ORDINAMENTO PRIMA COLONNA 
+.data
+inserisci: .asciiz "inserisci elemento "
+spazio: .asciiz " "
+duepunti: .asciiz ":"
+accapo: .asciiz "\n"
+
+
+.text
+
+
+.globl main
+main:
+
+addi $sp,$sp,-36
+move $s0,$sp
+
+move $a0,$s0
+jal inserimento
+
+
+move $a0,$s0
+jal stampa
+
+move $a0,$s0
+jal ordina_colonna
+
+
+
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+move $a0,$s0
+jal stampa
+
+esci:
+li $v0,10
+syscall
+
+inserimento:
+move $t9,$a0
+li $t1,0 #i=0
+li $t2,0 #j=0
+
+
+loop_riempi:
+beq $t2,3,incrementa_i
+
+la $a0,inserisci
+li $v0,4
+syscall 
+
+move $a0,$t1
+li $v0,1
+syscall
+
+la $a0,spazio
+li $v0,4
+syscall
+
+move $a0,$t2
+li $v0,1
+syscall
+
+la $a0,duepunti
+li $v0,4
+syscall 
+
+li $v0,5
+syscall
+
+sw $v0,($t9)
+
+
+addi $t9,$t9,4 
+addi $t2,$t2,1
+j loop_riempi
+incrementa_i:
+addi $t1,$t1,1
+
+beq $t1,3,esci_riempi
+li $t2,0 #azzero la j 
+j loop_riempi
+
+esci_riempi:
+jr $ra 
+
+
+stampa:
+move $t9,$a0
+li $t1,0
+li $t2,0
+
+loop_stampa:
+beq $t2,3,jump_down
+
+lw $t3,($t9)
+
+move $a0,$t3
+li $v0,1
+syscall 
+
+la $a0,spazio
+li $v0,4
+syscall
+
+
+addi $t2,$t2,1
+addi $t9,$t9,4
+j loop_stampa
+jump_down:
+
+la $a0,accapo
+li $v0,4
+syscall
+
+
+addi $t1,$t1,1
+li $t2,0
+
+beq $t1,3,exit_stampa
+j loop_stampa
+exit_stampa:
+jr $ra 
+
+ordina_colonna:
+move $t9,$a0
+li $t0,0
+li $t1,0
+li $t8,0
+li $t3,12 
+loop_ordina:
+beq $t0,2,incrementa_i_ordina
+
+add $t5,$t1,$t9
+lw $t2,($t5)
+
+add $t7,$t3,$t9
+
+lw $t4,($t7)
+
+bgt $t2,$t4,swap
+addi $t9,$t9,12
+addi $t0,$t0,1
+j loop_ordina
+swap:
+sw $t2,($t7)
+sw $t4,($t5)
+
+addi $t9,$t9,12
+addi $t0,$t0,1
+j ordina_colonna
+incrementa_i_ordina:
+addi $t8,$t8,1 
+beq $t8,3,esci_ordinamento
+li $t0,0
+move $t9,$a0
+add $t3,$t3,4
+add $t1,$t1,4
+
+j loop_ordina
+esci_ordinamento:
+
+jr $ra 
+
+
+

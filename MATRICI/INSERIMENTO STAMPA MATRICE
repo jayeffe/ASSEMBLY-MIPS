@@ -1,0 +1,113 @@
+.data
+inserisci: .asciiz "inserisci la matrice "
+spazio: .asciiz " " 
+duepunti: .asciiz ":"
+accapo: .asciiz "\n"
+stampa: .asciiz " stampa matrice "
+
+
+.text
+
+
+
+.globl main
+
+main:
+addi $sp,$sp,-36 #alloco lo spazio per nove elementi nello stack
+
+move $a0,$sp
+jal inserimento
+
+move $a0,$sp
+jal stampa_matrice
+
+addi $sp,$sp,36
+li $v0,10
+syscall
+
+inserimento:
+move $t9,$a0
+li $t0,0 #contatore righe  
+
+ciclo_righe:
+beq $t0,3,fine_righe
+#carico il secondo contatore
+li $t1,0
+ciclo_colonne:
+beq $t1,3,fine_colonne
+
+la $a0,inserisci
+li $v0,4
+syscall
+
+move $a0,$t0 #contatore delle righe
+li $v0,1
+syscall 
+#do uno spazio
+la $a0,spazio
+li $v0,4
+syscall
+
+move $a0,$t1
+li $v0,1
+syscall
+
+la $a0,duepunti
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+sw $v0,($t9) #carico in memoria l'elemento 
+addi $t9,$t9,4 #avanzo nella stringa 
+#man mano aumento le righe 
+addi $t1,$t1,1
+j ciclo_colonne
+fine_colonne:
+addi $t0,$t0,1 #incremento le righe
+j ciclo_righe 
+fine_righe:
+jr $ra
+
+stampa_matrice:
+move $t9,$a0
+li $t0,0
+ciclo_righest:
+beq $t0,3,esci_righest
+li $t1,0
+ciclo_colonnest:
+beq $t1,3,esci_colonnest
+
+lw $t3,($t9)
+
+move $a0,$t3
+li $v0,1
+syscall
+
+la $a0,spazio
+li $v0,4
+syscall
+addi $t9,$t9,4
+addi $t1,$t1,1
+
+j ciclo_colonnest
+esci_colonnest:
+la $a0,accapo
+li $v0,4
+syscall
+addi $t0,$t0,1
+j ciclo_righest
+esci_righest:
+jr $ra
+
+
+
+
+
+
+
+
+
+
+

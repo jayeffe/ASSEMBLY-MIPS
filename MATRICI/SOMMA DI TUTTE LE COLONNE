@@ -1,0 +1,161 @@
+.data
+inserisci: .asciiz "inserisci la matrice "
+spazio: .asciiz " "
+duepunti: .asciiz ":"
+accapo: .asciiz "\n"
+print: .asciiz "stampa della matrince \n "
+somma_colonne1: "la somma delle colonne e' "
+
+.text
+
+
+
+.globl main
+main:
+
+addi $sp,$sp,-36
+move $s0,$sp
+
+
+move $a0,$s0
+jal inserimento
+
+move $a0,$s0
+jal stampa
+
+move $a0,$s0
+jal somma_colonne 
+
+
+
+
+esci:
+addi $sp,$sp,36
+li $v0,10
+syscall
+
+inserimento:
+move $t9,$a0
+li $t0,0
+ciclo_inserimento:
+beq $t0,3,esci_inserimento
+li $t1,0
+ciclo_interno:
+beq $t1,3,esci_interno
+
+la $a0,inserisci
+li $v0,4
+syscall 
+
+#inserisci elemento 1 0 ecc
+#carico il contatore delle righe
+move $a0,$t0
+li $v0,1
+syscall
+
+la $a0,spazio
+li $v0,4
+syscall
+
+move $a0,$t1
+li $v0,1
+syscall
+
+la $a0,duepunti
+li $v0,4
+syscall
+
+li $v0,5
+syscall
+
+sw $v0,($t9)
+addi $t9,$t9,4
+
+
+
+addi $t1,$t1,1
+j ciclo_interno
+esci_interno:
+
+addi $t0,$t0,1
+j ciclo_inserimento
+esci_inserimento:
+
+jr $ra 
+
+stampa:
+move $t9,$a0
+li $t0,0
+ciclo_stampa:
+beq $t0,3,esci_stampa
+li $t1,0
+ciclo_internos:
+beq $t1,3,esci_interno1
+
+lw $t2,($t9)
+
+move $a0,$t2
+li $v0,1
+syscall 
+
+la $a0,spazio
+li $v0,4
+syscall 
+
+
+addi $t9,$t9,4
+addi $t1,$t1,1
+j ciclo_internos
+esci_interno1:
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+
+addi $t0,$t0,1
+j ciclo_stampa
+esci_stampa:
+jr $ra 
+
+somma_colonne:
+move $t9,$a0
+li $t4,0
+li $t0,0
+ciclo_esterno_colonne:
+beq $t0,3,esci_esterno_colonne
+li $t1,0
+ciclo_interno_righe:
+beq $t1,3,esci_interno_righe
+
+lw $t2,($t9)
+add $t4, $t4,$t2 
+
+
+addi $t9,$t9,4 
+addi $t1,$t1,1
+j ciclo_interno_righe
+esci_interno_righe:
+
+la $a0,somma_colonne1
+li $v0,4
+syscall
+
+move $a0,$t4
+li $v0,1
+syscall 
+
+la $a0,accapo
+li $v0,4
+syscall 
+
+
+
+
+addi $t0,$t0,1
+li $t4,0
+j ciclo_esterno_colonne
+esci_esterno_colonne:
+
+
+jr $ra 
